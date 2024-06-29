@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky"
   },
   "keywords": [],
   "author": "",
@@ -18,11 +19,18 @@
     "eslint-plugin-react": "^7.34.3",
     "git-commit-msg-linter": "^5.0.8",
     "globals": "^15.6.0",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.7",
     "prettier": "3.3.2",
     "typescript": "^5.5.2",
     "typescript-eslint": "^7.14.1"
   },
   "overrides": {
     "eslint": "^9.6.0"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "prettier --write --ignore-unknown"
+    ]
   }
 }
