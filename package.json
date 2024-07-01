@@ -4,7 +4,10 @@
   "main": "index.js",
   "scripts": {
     "prepare": "husky",
-    "test": "jest "
+    "test": "jest --passWithNoTests",
+    "test:watch": "npm test -- --watch",
+    "test:staged": "npm test -- --findRelatedTests",
+    "test:ci": "npm test -- --coverage"
   },
   "keywords": [],
   "author": "",
@@ -34,7 +37,8 @@
   },
   "lint-staged": {
     "*.{ts,tsx}": [
-      "prettier --write --ignore-unknown"
+      "prettier --write --ignore-unknown",
+      "npm run test:staged"
     ]
   }
 }
