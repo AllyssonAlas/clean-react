@@ -13,5 +13,8 @@ export default [
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
   ...fixupConfigRules(pluginReactConfig),
-  eslintConfigPrettier
+  eslintConfigPrettier,
+  {
+    rules: { '@typescript-eslint/no-namespace': 'off' },
+  },
 ]
