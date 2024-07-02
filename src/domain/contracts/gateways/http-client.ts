@@ -5,6 +5,7 @@ export interface HttpPostClient {
 export namespace HttpPostClient {
   export type Input = {
     url: string
+    body?: any
   }
 
   export type Output = Promise<void>
