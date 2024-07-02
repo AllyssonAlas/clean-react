@@ -1,7 +1,8 @@
 import { mock, MockProxy } from 'jest-mock-extended'
 
 import { Authentication, setupAuthentication } from '@/domain/usecases'
-import { HttpPostClient } from '@/domain/contracts/gateways'
+import { HttpPostClient, HttpStatusCode } from '@/domain/contracts/gateways'
+import { InvalidCredentialsError } from '@/domain/errors'
 
 import { mockAuthenticationInput } from '@/tests/domain/mocks'
 
@@ -13,6 +14,9 @@ describe('Authentication', () => {
   beforeAll(() => {
     url = 'any_url'
     httpPostClient = mock()
+    httpPostClient.post.mockResolvedValue({
+      statusCode: HttpStatusCode.noContent,
+    })
   })
 
   beforeEach(() => {
@@ -25,5 +29,13 @@ describe('Authentication', () => {
       url,
       body: mockAuthenticationInput(),
     })
+  })
+
+  it('Should throw if HttpPostClient returns 401', async () => {
+    httpPostClient.post.mockResolvedValueOnce({
+      statusCode: HttpStatusCode.unauthorized,
+    })
+    const promise = sut(mockAuthenticationInput())
+    await expect(promise).rejects.toThrow(new InvalidCredentialsError())
   })
 })
