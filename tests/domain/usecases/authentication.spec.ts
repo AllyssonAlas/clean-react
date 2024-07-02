@@ -28,6 +28,7 @@ describe('Authentication', () => {
 
   it('Should call HttpPostClient with correct URL and body', async () => {
     await sut(mockAuthenticationInput())
+
     expect(httpPostClient.post).toHaveBeenCalledWith({
       url,
       body: mockAuthenticationInput(),
@@ -38,7 +39,9 @@ describe('Authentication', () => {
     httpPostClient.post.mockResolvedValueOnce({
       statusCode: HttpStatusCode.unauthorized,
     })
+
     const promise = sut(mockAuthenticationInput())
+
     await expect(promise).rejects.toThrow(new InvalidCredentialsError())
   })
 
@@ -46,7 +49,9 @@ describe('Authentication', () => {
     httpPostClient.post.mockResolvedValueOnce({
       statusCode: HttpStatusCode.badRequest,
     })
+
     const promise = sut(mockAuthenticationInput())
+
     await expect(promise).rejects.toThrow(new UnexpectedError())
   })
 
@@ -54,7 +59,9 @@ describe('Authentication', () => {
     httpPostClient.post.mockResolvedValueOnce({
       statusCode: HttpStatusCode.notFound,
     })
+
     const promise = sut(mockAuthenticationInput())
+
     await expect(promise).rejects.toThrow(new UnexpectedError())
   })
 
@@ -62,12 +69,15 @@ describe('Authentication', () => {
     httpPostClient.post.mockResolvedValueOnce({
       statusCode: HttpStatusCode.serverError,
     })
+
     const promise = sut(mockAuthenticationInput())
+
     await expect(promise).rejects.toThrow(new UnexpectedError())
   })
 
   it('Should return an AccountModel if HttpPostClient return 200', async () => {
     const account = await sut(mockAuthenticationInput())
+
     expect(account).toEqual({ accessToken: 'any_access_token' })
   })
 })
