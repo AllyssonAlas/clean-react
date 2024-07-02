@@ -15,6 +15,9 @@ export default [
   ...fixupConfigRules(pluginReactConfig),
   eslintConfigPrettier,
   {
-    rules: { '@typescript-eslint/no-namespace': 'off' },
+    rules: {
+      '@typescript-eslint/no-namespace': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
   },
 ]
