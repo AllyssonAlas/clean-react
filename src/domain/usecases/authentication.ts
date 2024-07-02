@@ -3,7 +3,7 @@ import { InvalidCredentialsError, UnexpectedError } from '../errors'
 
 type Input = { email: string; password: string }
 export type Authentication = (input: Input) => Promise<void>
-type Setup = (url: string, httpPostClient: HttpPostClient) => Authentication
+type Setup = (url: string, httpPostClient: HttpPostClient<Input>) => Authentication
 
 export const setupAuthentication: Setup = (url, httpPostClient) => {
   return async (input) => {
