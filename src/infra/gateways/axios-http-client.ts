@@ -1,19 +1,22 @@
-import axios from 'axios'
+import axios, { AxiosResponse } from 'axios'
 
 import { HttpPostClient } from '@/domain/contracts/gateways'
 
-export class AxiosHttpClient {
+export class AxiosHttpClient implements HttpPostClient {
   async post({ url, params }: HttpPostClient.Input): Promise<HttpPostClient.Output> {
+    let response: AxiosResponse
     try {
-      const { data, status } = await axios.post(url, params)
-      return { body: data, statusCode: status }
+      response = await axios.post(url, params)
     } catch (error) {
       if (error.response) {
-        return {
-          body: error.response.data,
-          statusCode: error.response.status,
-        }
+        response = error.response
+      } else {
+        throw error
       }
+    }
+    return {
+      body: response.data,
+      statusCode: response.status,
     }
   }
 }
