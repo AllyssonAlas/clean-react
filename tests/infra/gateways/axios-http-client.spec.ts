@@ -48,4 +48,12 @@ describe('AxiosHttpClient', () => {
       statusCode: 400,
     })
   })
+
+  it('Should rethrow error if axios throw', async () => {
+    fakeAxios.post.mockRejectedValueOnce(new Error('axios_client_error'))
+
+    const promise = sut.post(input)
+
+    await expect(promise).rejects.toThrow(new Error('axios_client_error'))
+  })
 })
