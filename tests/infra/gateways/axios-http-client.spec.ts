@@ -7,13 +7,13 @@ jest.mock('axios')
 describe('AxiosHttpClient', () => {
   let input: {
     url: string
-    body: object
+    params: object
   }
   let fakeAxios: jest.Mocked<typeof axios>
   let sut: AxiosHttpClient
 
   beforeAll(() => {
-    input = { url: 'any_url', body: { any: 'any' } }
+    input = { url: 'any_url', params: { any: 'any' } }
     fakeAxios = axios as jest.Mocked<typeof axios>
   })
 

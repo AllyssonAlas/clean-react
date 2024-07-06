@@ -9,7 +9,7 @@ type Setup = (url: string, httpPostClient: HttpPostClient<Input, Output>) => Aut
 
 export const setupAuthentication: Setup = (url, httpPostClient) => {
   return async (input) => {
-    const response = await httpPostClient.post({ url, body: input })
+    const response = await httpPostClient.post({ url, params: input })
     switch (response.statusCode) {
       case HttpStatusCode.ok:
         return response.body

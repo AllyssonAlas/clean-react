@@ -26,12 +26,12 @@ describe('Authentication', () => {
     sut = setupAuthentication(url, httpPostClient)
   })
 
-  it('Should call HttpPostClient with correct URL and body', async () => {
+  it('Should call HttpPostClient with correct URL and params', async () => {
     await sut(mockAuthenticationInput())
 
     expect(httpPostClient.post).toHaveBeenCalledWith({
       url,
-      body: mockAuthenticationInput(),
+      params: mockAuthenticationInput(),
     })
   })
 

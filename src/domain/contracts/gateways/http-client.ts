@@ -13,7 +13,7 @@ export interface HttpPostClient<T = any, R = any> {
 export namespace HttpPostClient {
   export type Input<T = any> = {
     url: string
-    body?: T
+    params?: T
   }
 
   export type Output<R = any> = {
