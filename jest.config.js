@@ -8,6 +8,7 @@ module.exports = {
   coverageDirectory: "coverage",
   coverageProvider: "babel",
   moduleNameMapper: {
+    '\\.scss$': 'identity-obj-proxy', // <- this comes first, order matters
     '@/tests/(.+)': '<rootDir>/tests/$1',
     '@/(.+)': '<rootDir>/src/$1',
   },
@@ -18,6 +19,6 @@ module.exports = {
   testMatch: ['**/*.spec.ts'],
   testEnvironment: 'jsdom',
   transform: {
-    '\\.(ts|tsx)$': 'ts-jest'
+    '\\.ts$': 'ts-jest'
   },
 };
