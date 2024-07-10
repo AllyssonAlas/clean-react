@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "start": "webpack serve --open",
     "prepare": "husky",
-    "test": "jest --passWithNoTests",
+    "test": "jest --passWithNoTests --no-cache --runInBand",
     "test:watch": "npm test -- --watch",
     "test:staged": "npm test -- --findRelatedTests",
     "test:ci": "npm test -- --coverage"
@@ -20,6 +21,7 @@
     "@types/node": "^20.14.9",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
+    "clean-webpack-plugin": "^4.0.0",
     "eslint": "^9.6.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-react": "^7.34.3",
@@ -32,8 +34,12 @@
     "lint-staged": "^15.2.7",
     "prettier": "3.3.2",
     "ts-jest": "^29.1.5",
+    "ts-loader": "^9.5.1",
     "typescript": "^5.5.2",
-    "typescript-eslint": "^7.14.1"
+    "typescript-eslint": "^7.14.1",
+    "webpack": "^5.92.1",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^5.0.4"
   },
   "overrides": {
     "eslint": "^9.6.0"
