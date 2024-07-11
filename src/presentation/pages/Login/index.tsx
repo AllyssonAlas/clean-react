@@ -1,4 +1,5 @@
 import { LoginHeader } from '@/presentation/components/LoginHeader'
+import { Input } from '@/presentation/components/Input'
 import { Spinner } from '@/presentation/components/Spinner'
 import { Footer } from '@/presentation/components/Footer'
 
@@ -10,14 +11,8 @@ export const Login: React.FC = () => {
       <LoginHeader />
       <form className={'form'}>
         <h2>Login</h2>
-        <div className={'inputWrap'}>
-          <input type='email' name='email' placeholder='Digite seu e-mail' />
-          <span className={'status'}>🔴</span>
-        </div>
-        <div className={'inputWrap'}>
-          <input type='password' name='password' placeholder='Digite sua senha' />
-          <span className={'status'}>🔴</span>
-        </div>
+        <Input type='email' name='email' placeholder='Digite seu e-mail' />
+        <Input type='password' name='password' placeholder='Digite sua senha' />
         <button className={'submit'} type='submit'>
           Entrar
         </button>
