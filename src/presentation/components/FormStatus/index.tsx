@@ -1,4 +1,4 @@
-import { Spinner } from '@/presentation/components/Spinner'
+import { Spinner } from '@/presentation/components'
 
 import './styles.scss'
 

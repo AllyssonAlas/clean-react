@@ -1,7 +1,4 @@
-import { LoginHeader } from '@/presentation/components/LoginHeader'
-import { Input } from '@/presentation/components/Input'
-import { FormStatus } from '@/presentation/components/FormStatus'
-import { Footer } from '@/presentation/components/Footer'
+import { LoginHeader, Input, FormStatus, Footer } from '@/presentation/components'
 
 import './styles.scss'
 
