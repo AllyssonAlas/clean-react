@@ -1,7 +1,7 @@
 module.exports = {
   clearMocks: true,
   collectCoverageFrom: [
-    '<rootDir>/src/**/*.ts',
+    '<rootDir>/src/**/*.{ts,tsx}',
     '!<rootDir>/src/main/**',
     '!<rootDir>/src/**/index.ts',
   ],
@@ -16,9 +16,8 @@ module.exports = {
     "<rootDir>/src",
     "<rootDir>/tests"
   ],
-  testMatch: ['**/*.spec.ts'],
   testEnvironment: 'jsdom',
   transform: {
-    '\\.ts$': 'ts-jest'
+    '\\.(ts|tsx)$': 'ts-jest'
   },
 };
