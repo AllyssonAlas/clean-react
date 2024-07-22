@@ -8,7 +8,9 @@ import './styles.scss'
 export const Login: React.FC = () => {
   const [state] = useState<ContextData>({
     loading: false,
-    errorMessage: '',
+    formError: '',
+    emailError: 'Campo obrigatório',
+    passwordError: 'Campo obrigatório',
   })
 
   return (

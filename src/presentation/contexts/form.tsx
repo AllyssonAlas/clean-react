@@ -2,7 +2,9 @@ import { createContext } from 'react'
 
 export type ContextData = {
   loading: boolean
-  errorMessage: string
+  formError: string
+  emailError: string
+  passwordError: string
 }
 
 export const FormContext = createContext<ContextData>(null)
