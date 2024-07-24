@@ -39,4 +39,12 @@ describe('Login Page', () => {
 
     expect(validation.validate).toHaveBeenCalledWith({ email: 'any_email' })
   })
+
+  it('Should call Validation with correct password', () => {
+    const passwordInput = sut.getByTestId('password')
+
+    fireEvent.input(passwordInput, { target: { value: 'any_password' } })
+
+    expect(validation.validate).toHaveBeenCalledWith({ password: 'any_password' })
+  })
 })
