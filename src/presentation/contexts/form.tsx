@@ -3,6 +3,7 @@ import { createContext } from 'react'
 type ContextState = {
   loading: boolean
   email: string
+  password: string
   formError: string
   emailError: string
   passwordError: string
