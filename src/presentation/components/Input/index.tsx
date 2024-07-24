@@ -7,13 +7,19 @@ import './styles.scss'
 type Props = React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>
 
 export const Input: React.FC<Props> = (props: Props) => {
-  const value = useContext(FormContext)
-  const error = value[`${props.name}Error`]
+  const { state, setState } = useContext(FormContext)
+  const error = state[`${props.name}Error`]
   const getTitle = (): string => error
   const getStatus = (): string => '🔴'
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    setState((prevState) => ({
+      ...prevState,
+      [event.target.name]: event.target.value,
+    }))
+  }
   return (
     <div className={'inputWrap'}>
-      <input {...props} />
+      <input data-testid={props.name} onChange={handleChange} {...props} />
       <span className={'status'} data-testid={`${props.name}-status`} title={getTitle()}>
         {getStatus()}
       </span>

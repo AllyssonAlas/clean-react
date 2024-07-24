@@ -1,10 +1,16 @@
 import { createContext } from 'react'
 
-export type ContextData = {
+type ContextState = {
   loading: boolean
+  email: string
   formError: string
   emailError: string
   passwordError: string
+}
+
+export type ContextData = {
+  state: ContextState
+  setState: React.Dispatch<React.SetStateAction<ContextState>>
 }
 
 export const FormContext = createContext<ContextData>(null)
