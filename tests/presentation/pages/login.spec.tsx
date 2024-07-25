@@ -37,7 +37,7 @@ describe('Login Page', () => {
 
     fireEvent.input(emailInput, { target: { value: 'any_email' } })
 
-    expect(validation.validate).toHaveBeenCalledWith({ email: 'any_email' })
+    expect(validation.validate).toHaveBeenCalledWith('email', 'any_email')
   })
 
   it('Should call Validation with correct password', () => {
@@ -45,6 +45,6 @@ describe('Login Page', () => {
 
     fireEvent.input(passwordInput, { target: { value: 'any_password' } })
 
-    expect(validation.validate).toHaveBeenCalledWith({ password: 'any_password' })
+    expect(validation.validate).toHaveBeenCalledWith('password', 'any_password')
   })
 })
