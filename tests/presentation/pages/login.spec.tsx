@@ -5,11 +5,14 @@ import { Login } from '@/presentation/pages'
 import { Validation } from '@/presentation/protocols'
 
 describe('Login Page', () => {
+  let validationError: string
   let validation: MockProxy<Validation>
   let sut: RenderResult
 
   beforeAll(() => {
+    validationError = 'validation_error'
     validation = mock()
+    validation.validate.mockReturnValue(validationError)
   })
 
   beforeEach(() => {
@@ -26,7 +29,7 @@ describe('Login Page', () => {
 
     expect(errorWrap.childElementCount).toBe(0)
     expect(submitButton.disabled).toBe(true)
-    expect(emailStatus.title).toBe('Campo obrigatório')
+    expect(emailStatus.title).toBe(validationError)
     expect(emailStatus.textContent).toBe('🔴')
     expect(passwordStatus.title).toBe('Campo obrigatório')
     expect(passwordStatus.textContent).toBe('🔴')
@@ -46,5 +49,15 @@ describe('Login Page', () => {
     fireEvent.input(passwordInput, { target: { value: 'any_password' } })
 
     expect(validation.validate).toHaveBeenCalledWith('password', 'any_password')
+  })
+
+  it('Should show email error if validation fails', () => {
+    const emailInput = sut.getByTestId('email')
+
+    fireEvent.input(emailInput, { target: { value: 'any_email' } })
+    const emailStatus = sut.getByTestId('email-status')
+
+    expect(emailStatus.title).toBe(validationError)
+    expect(emailStatus.textContent).toBe('🔴')
   })
 })
