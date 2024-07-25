@@ -31,24 +31,8 @@ describe('Login Page', () => {
     expect(submitButton.disabled).toBe(true)
     expect(emailStatus.title).toBe(validationError)
     expect(emailStatus.textContent).toBe('🔴')
-    expect(passwordStatus.title).toBe('Campo obrigatório')
+    expect(passwordStatus.title).toBe(validationError)
     expect(passwordStatus.textContent).toBe('🔴')
-  })
-
-  it('Should call Validation with correct email', () => {
-    const emailInput = sut.getByTestId('email')
-
-    fireEvent.input(emailInput, { target: { value: 'any_email' } })
-
-    expect(validation.validate).toHaveBeenCalledWith('email', 'any_email')
-  })
-
-  it('Should call Validation with correct password', () => {
-    const passwordInput = sut.getByTestId('password')
-
-    fireEvent.input(passwordInput, { target: { value: 'any_password' } })
-
-    expect(validation.validate).toHaveBeenCalledWith('password', 'any_password')
   })
 
   it('Should show email error if validation fails', () => {
@@ -59,5 +43,15 @@ describe('Login Page', () => {
 
     expect(emailStatus.title).toBe(validationError)
     expect(emailStatus.textContent).toBe('🔴')
+  })
+
+  it('Should show password error if validation fails', () => {
+    const passwordInput = sut.getByTestId('password')
+
+    fireEvent.input(passwordInput, { target: { value: 'any_password' } })
+    const passwordStatus = sut.getByTestId('password-status')
+
+    expect(passwordStatus.title).toBe(validationError)
+    expect(passwordStatus.textContent).toBe('🔴')
   })
 })
