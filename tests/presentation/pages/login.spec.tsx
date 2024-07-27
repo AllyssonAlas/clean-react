@@ -1,4 +1,4 @@
-import { render, RenderResult, fireEvent, cleanup } from '@testing-library/react'
+import { render, RenderResult, fireEvent, cleanup, waitFor } from '@testing-library/react'
 import { mock, MockProxy } from 'jest-mock-extended'
 
 import { Login } from '@/presentation/pages'
@@ -53,5 +53,18 @@ describe('Login Page', () => {
 
     expect(passwordStatus.title).toBe(validationError)
     expect(passwordStatus.textContent).toBe('🔴')
+  })
+
+  it('Should show valid email state if validation succeeds', () => {
+    validation.validate.mockReturnValueOnce(undefined)
+    const emailInput = sut.getByTestId('email')
+    const emailStatus = sut.getByTestId('email-status')
+
+    fireEvent.input(emailInput, { target: { value: 'any_email' } })
+
+    waitFor(() => {
+      expect(emailStatus.title).toBe('Tudo certo!')
+      expect(emailStatus.textContent).toBe('🟢')
+    })
   })
 })
