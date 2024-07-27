@@ -80,4 +80,18 @@ describe('Login Page', () => {
       expect(passwordStatus.textContent).toBe('🟢')
     })
   })
+
+  it('Should enable submit button if form is valid', () => {
+    validation.validate.mockReturnValueOnce(undefined)
+    const emailInput = sut.getByTestId('email')
+    const passwordInput = sut.getByTestId('password')
+    const submitButton = sut.getByTestId('submit') as HTMLButtonElement
+
+    fireEvent.input(emailInput, { target: { value: 'any_email' } })
+    fireEvent.input(passwordInput, { target: { value: 'any_password' } })
+
+    waitFor(() => {
+      expect(submitButton.disabled).toBe(false)
+    })
+  })
 })
