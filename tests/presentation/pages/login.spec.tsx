@@ -67,4 +67,17 @@ describe('Login Page', () => {
       expect(emailStatus.textContent).toBe('🟢')
     })
   })
+
+  it('Should show valid password state if validation succeeds', () => {
+    validation.validate.mockReturnValueOnce(undefined)
+    const passwordInput = sut.getByTestId('password')
+    const passwordStatus = sut.getByTestId('password-status')
+
+    fireEvent.input(passwordInput, { target: { value: 'any_password' } })
+
+    waitFor(() => {
+      expect(passwordStatus.title).toBe('Tudo certo!')
+      expect(passwordStatus.textContent).toBe('🟢')
+    })
+  })
 })
