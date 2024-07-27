@@ -25,7 +25,7 @@ export const Login: React.FC<Props> = ({ validation }) => {
       emailError: validation.validate('email', state.email),
       passwordError: validation.validate('password', state.password),
     }))
-  }, [state.email])
+  }, [state.email, state.password])
 
   return (
     <div className={'login'}>
