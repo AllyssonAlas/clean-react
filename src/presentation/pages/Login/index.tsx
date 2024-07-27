@@ -19,6 +19,10 @@ export const Login: React.FC<Props> = ({ validation }) => {
     emailError: '',
     passwordError: '',
   })
+  const handleSubmit = (event: React.FormEvent): void => {
+    event.preventDefault()
+    setState((prevState) => ({ ...prevState, loading: true }))
+  }
   useEffect(() => {
     setState((prevState) => ({
       ...prevState,
@@ -31,7 +35,7 @@ export const Login: React.FC<Props> = ({ validation }) => {
     <div className={'login'}>
       <LoginHeader />
       <FormContext.Provider value={{ state, setState }}>
-        <form className={'form'}>
+        <form className={'form'} onSubmit={handleSubmit}>
           <h2>Login</h2>
           <Input type='email' name='email' placeholder='Digite seu e-mail' />
           <Input type='password' name='password' placeholder='Digite sua senha' />
