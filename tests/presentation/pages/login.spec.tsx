@@ -1,18 +1,21 @@
 import { render, fireEvent, cleanup, screen } from '@testing-library/react'
 import { mock, MockProxy } from 'jest-mock-extended'
 
+import { Authentication } from '@/domain/usecases'
 import { Login } from '@/presentation/pages'
 import { Validation } from '@/presentation/protocols'
 
 type SutTypes = {
+  authentication: Authentication
   validation: MockProxy<Validation>
 }
 
 const makeSut = (error?: string): SutTypes => {
   const validation = mock<Validation>()
   validation.validate.mockReturnValue(error)
-  render(<Login validation={validation} />)
-  return { validation }
+  const authentication = jest.fn() as Authentication
+  render(<Login authentication={authentication} validation={validation} />)
+  return { authentication, validation }
 }
 
 describe('Login Page', () => {
@@ -101,5 +104,24 @@ describe('Login Page', () => {
 
     const spinner = screen.queryByTestId('spinner')
     expect(spinner).toBeTruthy()
+  })
+
+  it('Should call Authentication with correct input', () => {
+    const { authentication } = makeSut()
+    const emailInput = screen.getByTestId('email')
+    const passwordInput = screen.getByTestId('password')
+    const submitButton = screen.getByTestId('submit')
+
+    fireEvent.input(emailInput, { target: { value: 'any_email' } })
+    fireEvent.input(passwordInput, { target: { value: 'any_password' } })
+    fireEvent.submit(submitButton)
+
+    expect(authentication).toHaveBeenCalledWith(
+      expect.objectContaining({
+        email: 'any_email',
+        password: 'any_password',
+      }),
+    )
+    expect(authentication).toHaveBeenCalledTimes(1)
   })
 })
