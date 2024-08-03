@@ -1,67 +1,64 @@
-import { render, RenderResult, fireEvent, cleanup, waitFor } from '@testing-library/react'
+import { render, fireEvent, cleanup, screen } from '@testing-library/react'
 import { mock, MockProxy } from 'jest-mock-extended'
 
 import { Login } from '@/presentation/pages'
 import { Validation } from '@/presentation/protocols'
 
+type SutTypes = {
+  validation: MockProxy<Validation>
+}
+
+const makeSut = (error?: string): SutTypes => {
+  const validation = mock<Validation>()
+  validation.validate.mockReturnValue(error)
+  render(<Login validation={validation} />)
+  return { validation }
+}
+
 describe('Login Page', () => {
-  let validation: MockProxy<Validation>
-  let sut: RenderResult
-
-  beforeAll(() => {
-    validation = mock()
-    validation.validate.mockReturnValue(undefined)
-  })
-
-  beforeEach(() => {
-    sut = render(<Login validation={validation} />)
-  })
-
   afterEach(cleanup)
 
   it('Should start with initial state', () => {
-    const errorWrap = sut.getByTestId('error-wrap')
-    const submitButton = sut.getByTestId('submit') as HTMLButtonElement
-    const emailStatus = sut.getByTestId('email-status')
-    const passwordStatus = sut.getByTestId('password-status')
+    makeSut('validation_error')
+    const errorWrap = screen.getByTestId('error-wrap')
+    const submitButton = screen.getByTestId('submit') as HTMLButtonElement
+    const emailStatus = screen.getByTestId('email-status')
+    const passwordStatus = screen.getByTestId('password-status')
 
-    waitFor(() => {
-      expect(errorWrap.childElementCount).toBe(0)
-      expect(submitButton.disabled).toBe(true)
-      expect(emailStatus.title).toBe('validation_error')
-      expect(emailStatus.textContent).toBe('🔴')
-      expect(passwordStatus.title).toBe('validation_error')
-      expect(passwordStatus.textContent).toBe('🔴')
-    })
+    expect(errorWrap.childElementCount).toBe(0)
+    expect(submitButton.disabled).toBe(true)
+    expect(emailStatus.title).toBe('validation_error')
+    expect(emailStatus.textContent).toBe('🔴')
+    expect(passwordStatus.title).toBe('validation_error')
+    expect(passwordStatus.textContent).toBe('🔴')
   })
 
   it('Should show email error if validation fails', () => {
-    const emailInput = sut.getByTestId('email')
+    makeSut('validation_error')
+    const emailInput = screen.getByTestId('email')
 
     fireEvent.input(emailInput, { target: { value: 'any_email' } })
-    const emailStatus = sut.getByTestId('email-status')
 
-    waitFor(() => {
-      expect(emailStatus.title).toBe('validation_error')
-      expect(emailStatus.textContent).toBe('🔴')
-    })
+    const emailStatus = screen.getByTestId('email-status')
+    expect(emailStatus.title).toBe('validation_error')
+    expect(emailStatus.textContent).toBe('🔴')
   })
 
   it('Should show password error if validation fails', () => {
-    const passwordInput = sut.getByTestId('password')
+    makeSut('validation_error')
+    const passwordInput = screen.getByTestId('password')
 
     fireEvent.input(passwordInput, { target: { value: 'any_password' } })
-    const passwordStatus = sut.getByTestId('password-status')
 
-    waitFor(() => {
-      expect(passwordStatus.title).toBe('validation_error')
-      expect(passwordStatus.textContent).toBe('🔴')
-    })
+    const passwordStatus = screen.getByTestId('password-status')
+    expect(passwordStatus.title).toBe('validation_error')
+    expect(passwordStatus.textContent).toBe('🔴')
   })
 
   it('Should show valid email state if validation succeeds', () => {
-    const emailInput = sut.getByTestId('email')
-    const emailStatus = sut.getByTestId('email-status')
+    makeSut()
+    const emailInput = screen.getByTestId('email')
+    const emailStatus = screen.getByTestId('email-status')
 
     fireEvent.input(emailInput, { target: { value: 'any_email' } })
 
@@ -70,8 +67,9 @@ describe('Login Page', () => {
   })
 
   it('Should show valid password state if validation succeeds', () => {
-    const passwordInput = sut.getByTestId('password')
-    const passwordStatus = sut.getByTestId('password-status')
+    makeSut()
+    const passwordInput = screen.getByTestId('password')
+    const passwordStatus = screen.getByTestId('password-status')
 
     fireEvent.input(passwordInput, { target: { value: 'any_password' } })
 
@@ -80,9 +78,10 @@ describe('Login Page', () => {
   })
 
   it('Should enable submit button if form is valid', () => {
-    const emailInput = sut.getByTestId('email')
-    const passwordInput = sut.getByTestId('password')
-    const submitButton = sut.getByTestId('submit') as HTMLButtonElement
+    makeSut()
+    const emailInput = screen.getByTestId('email')
+    const passwordInput = screen.getByTestId('password')
+    const submitButton = screen.getByTestId('submit') as HTMLButtonElement
 
     fireEvent.input(emailInput, { target: { value: 'any_email' } })
     fireEvent.input(passwordInput, { target: { value: 'any_password' } })
@@ -91,17 +90,16 @@ describe('Login Page', () => {
   })
 
   it('Should show spinner on submit', () => {
-    const emailInput = sut.getByTestId('email')
-    const passwordInput = sut.getByTestId('password')
-    const submitButton = sut.getByTestId('submit')
+    makeSut()
+    const emailInput = screen.getByTestId('email')
+    const passwordInput = screen.getByTestId('password')
+    const submitButton = screen.getByTestId('submit')
 
     fireEvent.input(emailInput, { target: { value: 'any_email' } })
     fireEvent.input(passwordInput, { target: { value: 'any_password' } })
-    fireEvent.click(submitButton)
+    fireEvent.submit(submitButton)
 
-    waitFor(() => {
-      const spinner = sut.getByTestId('spinner')
-      expect(spinner).toBeTruthy()
-    })
+    const spinner = screen.queryByTestId('spinner')
+    expect(spinner).toBeTruthy()
   })
 })
