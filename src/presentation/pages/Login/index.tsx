@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 
+import { Authentication } from '@/domain/usecases'
 import { FormContext, ContextData } from '@/presentation/contexts'
 import { LoginHeader, Input, FormStatus, Footer } from '@/presentation/components'
 import { Validation } from '@/presentation/protocols'
@@ -7,10 +8,11 @@ import { Validation } from '@/presentation/protocols'
 import './styles.scss'
 
 type Props = {
+  authentication?: Authentication
   validation?: Validation
 }
 
-export const Login: React.FC<Props> = ({ validation }) => {
+export const Login: React.FC<Props> = ({ authentication, validation }) => {
   const [state, setState] = useState<ContextData['state']>({
     loading: false,
     email: '',
@@ -19,9 +21,10 @@ export const Login: React.FC<Props> = ({ validation }) => {
     emailError: '',
     passwordError: '',
   })
-  const handleSubmit = (event: React.FormEvent): void => {
+  const handleSubmit = async (event: React.FormEvent): Promise<void> => {
     event.preventDefault()
     setState((prevState) => ({ ...prevState, loading: true }))
+    await authentication(state)
   }
   useEffect(() => {
     setState((prevState) => ({
