@@ -129,4 +129,13 @@ describe('Login Page', () => {
 
     expect(authentication).toHaveBeenCalledTimes(1)
   })
+
+  it('Should not call Authentication if form is invalid', () => {
+    const { authentication } = makeSut('validation_error')
+
+    populateInput('email')
+    fireEvent.submit(screen.getByTestId('form'))
+
+    expect(authentication).toHaveBeenCalledTimes(0)
+  })
 })
