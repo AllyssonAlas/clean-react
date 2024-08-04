@@ -120,4 +120,13 @@ describe('Login Page', () => {
     )
     expect(authentication).toHaveBeenCalledTimes(1)
   })
+
+  it('Should call Authentication only once', () => {
+    const { authentication } = makeSut()
+
+    simulateValidSubmit()
+    simulateValidSubmit()
+
+    expect(authentication).toHaveBeenCalledTimes(1)
+  })
 })
