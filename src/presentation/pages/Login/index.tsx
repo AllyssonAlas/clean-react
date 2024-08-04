@@ -21,9 +21,10 @@ export const Login: React.FC<Props> = ({ authentication, validation }) => {
     emailError: '',
     passwordError: '',
   })
+  const isSubmitDisabled = !!state.emailError || !!state.passwordError || state.loading
   const handleSubmit = async (event: React.FormEvent): Promise<void> => {
     event.preventDefault()
-    if (state.loading) return
+    if (isSubmitDisabled) return
     setState((prevState) => ({ ...prevState, loading: true }))
     await authentication(state)
   }
@@ -39,16 +40,11 @@ export const Login: React.FC<Props> = ({ authentication, validation }) => {
     <div className={'login'}>
       <LoginHeader />
       <FormContext.Provider value={{ state, setState }}>
-        <form className={'form'} onSubmit={handleSubmit}>
+        <form className={'form'} data-testid={'form'} onSubmit={handleSubmit}>
           <h2>Login</h2>
           <Input type='email' name='email' placeholder='Digite seu e-mail' />
           <Input type='password' name='password' placeholder='Digite sua senha' />
-          <button
-            className={'submit'}
-            data-testid={'submit'}
-            disabled={!!state.emailError || !!state.passwordError}
-            type='submit'
-          >
+          <button className={'submit'} data-testid={'submit'} disabled={isSubmitDisabled} type='submit'>
             Entrar
           </button>
           <span className={'link'}>Criar conta</span>
