@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 import { Authentication } from '@/domain/usecases'
 import { FormContext, ContextData } from '@/presentation/contexts'
@@ -14,6 +14,7 @@ type Props = {
 }
 
 export const Login: React.FC<Props> = ({ authentication, validation }) => {
+  const navigate = useNavigate()
   const [state, setState] = useState<ContextData['state']>({
     loading: false,
     email: '',
@@ -30,6 +31,7 @@ export const Login: React.FC<Props> = ({ authentication, validation }) => {
       setState((prevState) => ({ ...prevState, loading: true }))
       const { accessToken } = await authentication(state)
       localStorage.setItem('accessToken', accessToken)
+      navigate('/', { replace: true })
     } catch (error) {
       setState((prevState) => ({
         ...prevState,
