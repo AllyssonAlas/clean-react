@@ -1,19 +1,19 @@
-import { render, fireEvent, cleanup, screen } from '@testing-library/react'
+import { render, fireEvent, cleanup, screen, waitFor } from '@testing-library/react'
 import { mock, MockProxy } from 'jest-mock-extended'
 
-import { Authentication } from '@/domain/usecases'
 import { Login } from '@/presentation/pages'
 import { Validation } from '@/presentation/protocols'
+import { InvalidCredentialsError } from '@/domain/errors'
 
 type SutTypes = {
-  authentication: Authentication
+  authentication: jest.Mock
   validation: MockProxy<Validation>
 }
 
 const makeSut = (error?: string): SutTypes => {
   const validation = mock<Validation>()
   validation.validate.mockReturnValue(error)
-  const authentication = jest.fn() as Authentication
+  const authentication = jest.fn()
   render(<Login authentication={authentication} validation={validation} />)
   return { authentication, validation }
 }
@@ -137,5 +137,19 @@ describe('Login Page', () => {
     fireEvent.submit(screen.getByTestId('form'))
 
     expect(authentication).toHaveBeenCalledTimes(0)
+  })
+
+  it('Should present error if Authentication fails', async () => {
+    const { authentication } = makeSut()
+    const error = new InvalidCredentialsError()
+    authentication.mockRejectedValue(error)
+
+    simulateValidSubmit()
+
+    const errorWrap = screen.getByTestId('error-wrap')
+    await waitFor(() => errorWrap)
+    const mainError = screen.getByTestId('main-error')
+    expect(errorWrap.childElementCount).toBe(1)
+    expect(mainError.textContent).toBe(error.message)
   })
 })
