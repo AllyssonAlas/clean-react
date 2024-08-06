@@ -173,6 +173,8 @@ describe('Login Page', () => {
     await waitFor(() => screen.getByTestId('form'))
 
     expect(localStorage.setItem).toHaveBeenCalledWith('accessToken', 'any_access_token')
+    expect(history.location.pathname).toBe('/')
+    expect(history.index).toBe(0)
   })
 
   it('Should got to Signup page', async () => {
