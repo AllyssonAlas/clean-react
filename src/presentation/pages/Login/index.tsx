@@ -27,7 +27,8 @@ export const Login: React.FC<Props> = ({ authentication, validation }) => {
     try {
       if (isSubmitDisabled) return
       setState((prevState) => ({ ...prevState, loading: true }))
-      await authentication(state)
+      const { accessToken } = await authentication(state)
+      localStorage.setItem('accessToken', accessToken)
     } catch (error) {
       setState((prevState) => ({
         ...prevState,
