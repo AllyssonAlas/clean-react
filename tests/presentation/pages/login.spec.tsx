@@ -1,5 +1,6 @@
 import { render, fireEvent, cleanup, screen, waitFor } from '@testing-library/react'
 import { mock, MockProxy } from 'jest-mock-extended'
+import 'jest-localstorage-mock'
 
 import { Login } from '@/presentation/pages'
 import { Validation } from '@/presentation/protocols'
@@ -13,7 +14,7 @@ type SutTypes = {
 const makeSut = (error?: string): SutTypes => {
   const validation = mock<Validation>()
   validation.validate.mockReturnValue(error)
-  const authentication = jest.fn()
+  const authentication = jest.fn().mockResolvedValue({ accessToken: 'any_access_token' })
   render(<Login authentication={authentication} validation={validation} />)
   return { authentication, validation }
 }
@@ -31,6 +32,10 @@ const simulateValidSubmit = (): void => {
 }
 
 describe('Login Page', () => {
+  beforeEach(() => {
+    localStorage.clear()
+  })
+
   afterEach(cleanup)
 
   it('Should start with initial state', () => {
@@ -151,5 +156,14 @@ describe('Login Page', () => {
     const mainError = screen.getByTestId('main-error')
     expect(errorWrap.childElementCount).toBe(1)
     expect(mainError.textContent).toBe(error.message)
+  })
+
+  it('Should add accessToken to localStorage on success', async () => {
+    makeSut()
+
+    simulateValidSubmit()
+    await waitFor(() => screen.getByTestId('form'))
+
+    expect(localStorage.setItem).toHaveBeenCalledWith('accessToken', 'any_access_token')
   })
 })
