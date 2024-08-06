@@ -1,5 +1,7 @@
+import { Router } from 'react-router-dom'
 import { render, fireEvent, cleanup, screen, waitFor } from '@testing-library/react'
 import { mock, MockProxy } from 'jest-mock-extended'
+import { createMemoryHistory } from 'history'
 import 'jest-localstorage-mock'
 
 import { Login } from '@/presentation/pages'
@@ -11,11 +13,17 @@ type SutTypes = {
   validation: MockProxy<Validation>
 }
 
+const history = createMemoryHistory({ initialEntries: ['/login'] })
+
 const makeSut = (error?: string): SutTypes => {
   const validation = mock<Validation>()
   validation.validate.mockReturnValue(error)
   const authentication = jest.fn().mockResolvedValue({ accessToken: 'any_access_token' })
-  render(<Login authentication={authentication} validation={validation} />)
+  render(
+    <Router location={history.location} navigator={history}>
+      <Login authentication={authentication} validation={validation} />
+    </Router>,
+  )
   return { authentication, validation }
 }
 
@@ -165,5 +173,14 @@ describe('Login Page', () => {
     await waitFor(() => screen.getByTestId('form'))
 
     expect(localStorage.setItem).toHaveBeenCalledWith('accessToken', 'any_access_token')
+  })
+
+  it('Should got to Signup page', async () => {
+    makeSut()
+
+    fireEvent.click(screen.getByTestId('signup'))
+
+    expect(history.location.pathname).toBe('/signup')
+    expect(history.index).toBe(1)
   })
 })
