@@ -142,7 +142,7 @@ describe('Login Page', () => {
   it('Should present error if Authentication fails', async () => {
     const { authentication } = makeSut()
     const error = new InvalidCredentialsError()
-    authentication.mockRejectedValue(error)
+    authentication.mockRejectedValueOnce(error)
 
     simulateValidSubmit()
 
