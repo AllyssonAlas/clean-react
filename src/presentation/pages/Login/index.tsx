@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 
 import { Authentication } from '@/domain/usecases'
 import { FormContext, ContextData } from '@/presentation/contexts'
@@ -56,7 +57,9 @@ export const Login: React.FC<Props> = ({ authentication, validation }) => {
           <button className={'submit'} data-testid={'submit'} disabled={isSubmitDisabled} type='submit'>
             Entrar
           </button>
-          <span className={'link'}>Criar conta</span>
+          <Link className={'link'} data-testid={'signup'} to={'/signup'}>
+            Criar conta
+          </Link>
           <FormStatus />
         </form>
       </FormContext.Provider>
