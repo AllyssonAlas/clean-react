@@ -24,9 +24,17 @@ export const Login: React.FC<Props> = ({ authentication, validation }) => {
   const isSubmitDisabled = !!state.emailError || !!state.passwordError || state.loading
   const handleSubmit = async (event: React.FormEvent): Promise<void> => {
     event.preventDefault()
-    if (isSubmitDisabled) return
-    setState((prevState) => ({ ...prevState, loading: true }))
-    await authentication(state)
+    try {
+      if (isSubmitDisabled) return
+      setState((prevState) => ({ ...prevState, loading: true }))
+      await authentication(state)
+    } catch (error) {
+      setState((prevState) => ({
+        ...prevState,
+        loading: false,
+        formError: error.message,
+      }))
+    }
   }
   useEffect(() => {
     setState((prevState) => ({
