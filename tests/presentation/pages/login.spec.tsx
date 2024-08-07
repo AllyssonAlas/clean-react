@@ -1,5 +1,5 @@
 import { Router } from 'react-router-dom'
-import { render, fireEvent, cleanup, screen, waitFor } from '@testing-library/react'
+import { render, fireEvent, cleanup, screen } from '@testing-library/react'
 import { mock, MockProxy } from 'jest-mock-extended'
 import { createMemoryHistory } from 'history'
 import 'jest-localstorage-mock'
@@ -32,11 +32,10 @@ const populateInput = (field: string): void => {
   fireEvent.input(input, { target: { value: `any_${field}` } })
 }
 
-const simulateValidSubmit = (): void => {
+const simulateValidSubmit = async (): Promise<void> => {
   populateInput('email')
   populateInput('password')
-  const submitButton = screen.getByTestId('submit')
-  fireEvent.submit(submitButton)
+  await fireEvent.submit(screen.getByTestId('form'))
 }
 
 describe('Login Page', () => {
@@ -146,8 +145,7 @@ describe('Login Page', () => {
   it('Should not call Authentication if form is invalid', () => {
     const { authentication } = makeSut('validation_error')
 
-    populateInput('email')
-    fireEvent.submit(screen.getByTestId('form'))
+    simulateValidSubmit()
 
     expect(authentication).toHaveBeenCalledTimes(0)
   })
@@ -159,8 +157,7 @@ describe('Login Page', () => {
 
     simulateValidSubmit()
 
-    const errorWrap = screen.getByTestId('error-wrap')
-    await waitFor(() => errorWrap)
+    const errorWrap = await screen.findByTestId('error-wrap')
     const mainError = screen.getByTestId('main-error')
     expect(errorWrap.childElementCount).toBe(1)
     expect(mainError.textContent).toBe(error.message)
@@ -169,8 +166,7 @@ describe('Login Page', () => {
   it('Should add accessToken to localStorage on success', async () => {
     makeSut()
 
-    simulateValidSubmit()
-    await waitFor(() => screen.getByTestId('form'))
+    await simulateValidSubmit()
 
     expect(localStorage.setItem).toHaveBeenCalledWith('accessToken', 'any_access_token')
     expect(history.location.pathname).toBe('/')
