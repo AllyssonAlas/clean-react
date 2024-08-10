@@ -25,4 +25,12 @@ describe('Required', () => {
 
     expect(error).toEqual(new RequiredFieldError().message)
   })
+
+  it('Should return error if field is null', () => {
+    const sut = new Required('field')
+
+    const error = sut.validate({ field: null })
+
+    expect(error).toEqual(new RequiredFieldError().message)
+  })
 })
