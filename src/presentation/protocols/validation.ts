@@ -4,5 +4,5 @@ export interface Validation {
 
 export interface FieldValidation {
   field: string
-  validate(input: object): string
+  validate(input: object): string | undefined
 }
