@@ -1,3 +1,8 @@
 export interface Validation {
-  validate(fieldName: string, fieldValue: string): string | undefined
+  validate(fieldName: string, input: object): string | undefined
+}
+
+export interface FieldValidation {
+  field: string
+  validate(input: object): string
 }
