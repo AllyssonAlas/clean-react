@@ -11,11 +11,15 @@ export class Required implements FieldValidation {
   }
 }
 
-export class RequiredEmail {
+export class RequiredEmail implements FieldValidation {
   constructor(readonly field: string) {}
 
-  validate(input: object): string {
-    return new RequiredEmailError().message
+  validate(input: object): string | undefined {
+    const emailRegex =
+      /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/
+    if (!emailRegex.test(input[this.field])) {
+      return new RequiredEmailError().message
+    }
   }
 }
 
