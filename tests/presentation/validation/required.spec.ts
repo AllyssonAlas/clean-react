@@ -57,6 +57,12 @@ describe('RequiredEmail', () => {
 
     expect(error).toEqual(new RequiredEmailError().message)
   })
+
+  it('Should undefined error if validation succeeds', () => {
+    const error = sut.validate({ field: 'any_email@mail.com' })
+
+    expect(error).toBeUndefined()
+  })
 })
 
 describe('RequiredMinLength', () => {
