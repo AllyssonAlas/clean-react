@@ -1,5 +1,5 @@
 import { FieldValidation } from '@/presentation/protocols'
-import { RequiredFieldError, RequiredMinLengthError } from '@/presentation/errors'
+import { RequiredFieldError, RequiredEmailError, RequiredMinLengthError } from '@/presentation/errors'
 
 export class Required implements FieldValidation {
   constructor(readonly field: string) {}
@@ -8,6 +8,14 @@ export class Required implements FieldValidation {
     if (!input[this.field]) {
       return new RequiredFieldError().message
     }
+  }
+}
+
+export class RequiredEmail {
+  constructor(readonly field: string) {}
+
+  validate(input: object): string {
+    return new RequiredEmailError().message
   }
 }
 
