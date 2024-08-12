@@ -1,5 +1,5 @@
-import { Required } from '@/presentation/validation'
-import { RequiredFieldError } from '@/presentation/errors'
+import { Required, RequiredMinLength } from '@/presentation/validation'
+import { RequiredFieldError, RequiredMinLengthError } from '@/presentation/errors'
 
 describe('Required', () => {
   let sut: Required
@@ -36,5 +36,25 @@ describe('Required', () => {
     const error = sut.validate({ field: 'any_value' })
 
     expect(error).toBeUndefined()
+  })
+})
+
+describe('RequiredMinLength', () => {
+  let sut: RequiredMinLength
+
+  beforeEach(() => {
+    sut = new RequiredMinLength('field', 5)
+  })
+
+  it('Should return error if input does not contain min length', () => {
+    const error = sut.validate({ field: '' })
+
+    expect(error).toEqual(new RequiredMinLengthError(5).message)
+  })
+
+  it('Should return error if input does not contain min length', () => {
+    const error = sut.validate({ field: '123' })
+
+    expect(error).toEqual(new RequiredMinLengthError(5).message)
   })
 })
