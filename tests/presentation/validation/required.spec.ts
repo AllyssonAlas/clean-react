@@ -1,5 +1,5 @@
-import { Required, RequiredMinLength } from '@/presentation/validation'
-import { RequiredFieldError, RequiredMinLengthError } from '@/presentation/errors'
+import { Required, RequiredEmail, RequiredMinLength } from '@/presentation/validation'
+import { RequiredFieldError, RequiredEmailError, RequiredMinLengthError } from '@/presentation/errors'
 
 describe('Required', () => {
   let sut: Required
@@ -36,6 +36,26 @@ describe('Required', () => {
     const error = sut.validate({ field: 'any_value' })
 
     expect(error).toBeUndefined()
+  })
+})
+
+describe('RequiredEmail', () => {
+  let sut: RequiredEmail
+
+  beforeEach(() => {
+    sut = new RequiredEmail('field')
+  })
+
+  it('Should return error if input does not contain an email', () => {
+    const error = sut.validate({ field: '' })
+
+    expect(error).toEqual(new RequiredEmailError().message)
+  })
+
+  it('Should return error if input does not contain an email', () => {
+    const error = sut.validate({ field: 'any_value' })
+
+    expect(error).toEqual(new RequiredEmailError().message)
   })
 })
 
