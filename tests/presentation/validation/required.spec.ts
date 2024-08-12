@@ -57,4 +57,10 @@ describe('RequiredMinLength', () => {
 
     expect(error).toEqual(new RequiredMinLengthError(5).message)
   })
+
+  it('Should return undefined if validation succeeds', () => {
+    const error = sut.validate({ field: '12345' })
+
+    expect(error).toBeUndefined()
+  })
 })
