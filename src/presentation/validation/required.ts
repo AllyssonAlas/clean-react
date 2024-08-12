@@ -11,13 +11,15 @@ export class Required implements FieldValidation {
   }
 }
 
-export class RequiredMinLength {
+export class RequiredMinLength implements FieldValidation {
   constructor(
     readonly field: string,
     private readonly length: number,
   ) {}
 
-  validate(input: object): string {
-    return new RequiredMinLengthError(this.length).message
+  validate(input: object): string | undefined {
+    if (input[this.field].length < this.length) {
+      return new RequiredMinLengthError(this.length).message
+    }
   }
 }
