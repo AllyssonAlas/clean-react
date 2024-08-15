@@ -27,4 +27,10 @@ describe('ValidationComposite', () => {
 
     expect(error).toBe('message_error_0')
   })
+
+  it('Should return undefined if all validation succeed', () => {
+    const error = sut.validate('any_field', 'any_value')
+
+    expect(error).toBeUndefined()
+  })
 })
