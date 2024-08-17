@@ -1,20 +1,20 @@
 export class RequiredFieldError extends Error {
   constructor() {
-    super('Field is required')
+    super('Campo obrigatório')
     this.name = 'RequiredFieldError'
   }
 }
 
 export class RequiredEmailError extends Error {
   constructor() {
-    super('Field requires an email')
+    super('Campo requer um email')
     this.name = 'RequiredEmailError'
   }
 }
 
 export class RequiredMinLengthError extends Error {
   constructor(length: number) {
-    super(`Field requires at least ${length} characters`)
+    super(`Campo requer pelo menos ${length} caracteres`)
     this.name = 'RequiredMinLengthError'
   }
 }
