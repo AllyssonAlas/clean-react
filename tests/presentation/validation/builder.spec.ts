@@ -18,4 +18,10 @@ describe('ValidationBuilder', () => {
 
     expect(sut).toEqual([new RequiredMinLength('anyField', 5)])
   })
+
+  it('Should add multiples validators to validators array', () => {
+    const sut = Builder.field('anyField').required().email().min(5).build()
+
+    expect(sut).toEqual([new Required('anyField'), new RequiredEmail('anyField'), new RequiredMinLength('anyField', 5)])
+  })
 })
