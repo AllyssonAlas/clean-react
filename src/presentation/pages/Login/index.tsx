@@ -9,8 +9,8 @@ import { Validation } from '@/presentation/protocols'
 import './styles.scss'
 
 type Props = {
-  authentication?: Authentication
-  validation?: Validation
+  authentication: Authentication
+  validation: Validation
 }
 
 export const Login: React.FC<Props> = ({ authentication, validation }) => {
