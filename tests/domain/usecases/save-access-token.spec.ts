@@ -21,4 +21,12 @@ describe('SaveAccessToken', () => {
     expect(setStorage.set).toHaveBeenCalledWith({ key: 'accessToken', value: 'any_token' })
     expect(setStorage.set).toHaveBeenCalledTimes(1)
   })
+
+  it('Should rethrow if SetStorage throws', async () => {
+    setStorage.set.mockRejectedValueOnce(new Error())
+
+    const promise = sut({ token: 'any_token' })
+
+    expect(promise).rejects.toThrow(new Error())
+  })
 })
