@@ -18,7 +18,7 @@ const history = createMemoryHistory({ initialEntries: ['/login'] })
 const makeSut = (error?: string): SutTypes => {
   const validation = mock<Validation>()
   validation.validate.mockReturnValue(error)
-  const saveAccessToken = jest.fn()
+  const saveAccessToken = jest.fn().mockResolvedValue(undefined)
   const authentication = jest.fn().mockResolvedValue({ accessToken: 'any_access_token' })
   render(
     <Router location={history.location} navigator={history}>
@@ -167,6 +167,19 @@ describe('Login Page', () => {
 
     expect(saveAccessToken).toHaveBeenCalledWith({ token: 'any_access_token' })
     expect(saveAccessToken).toHaveBeenCalledTimes(1)
+  })
+
+  it('Should present error if SaveAccessToken fails', async () => {
+    const { saveAccessToken } = makeSut()
+    const error = new InvalidCredentialsError()
+    saveAccessToken.mockRejectedValueOnce(error)
+
+    simulateValidSubmit()
+
+    const errorWrap = await screen.findByTestId('error-wrap')
+    const mainError = await screen.findByTestId('main-error')
+    expect(errorWrap.childElementCount).toBe(1)
+    expect(mainError.textContent).toBe(error.message)
   })
 
   it('Should got to Signup page', async () => {
