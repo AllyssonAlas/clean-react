@@ -2,7 +2,6 @@ import { Router } from 'react-router-dom'
 import { render, fireEvent, cleanup, screen } from '@testing-library/react'
 import { mock, MockProxy } from 'jest-mock-extended'
 import { createMemoryHistory } from 'history'
-import 'jest-localstorage-mock'
 
 import { Login } from '@/presentation/pages'
 import { Validation } from '@/presentation/protocols'
@@ -10,6 +9,7 @@ import { InvalidCredentialsError } from '@/domain/errors'
 
 type SutTypes = {
   authentication: jest.Mock
+  saveAccessToken: jest.Mock
   validation: MockProxy<Validation>
 }
 
@@ -18,13 +18,14 @@ const history = createMemoryHistory({ initialEntries: ['/login'] })
 const makeSut = (error?: string): SutTypes => {
   const validation = mock<Validation>()
   validation.validate.mockReturnValue(error)
+  const saveAccessToken = jest.fn()
   const authentication = jest.fn().mockResolvedValue({ accessToken: 'any_access_token' })
   render(
     <Router location={history.location} navigator={history}>
-      <Login authentication={authentication} validation={validation} />
+      <Login authentication={authentication} saveAccessToken={saveAccessToken} validation={validation} />
     </Router>,
   )
-  return { authentication, validation }
+  return { authentication, saveAccessToken, validation }
 }
 
 const populateInput = (field: string): void => {
@@ -39,10 +40,6 @@ const simulateValidSubmit = async (): Promise<void> => {
 }
 
 describe('Login Page', () => {
-  beforeEach(() => {
-    localStorage.clear()
-  })
-
   afterEach(cleanup)
 
   it('Should start with initial state', () => {
@@ -163,14 +160,13 @@ describe('Login Page', () => {
     expect(mainError.textContent).toBe(error.message)
   })
 
-  it('Should add accessToken to localStorage on success', async () => {
-    makeSut()
+  it('Should call SaveAccessToken on success', async () => {
+    const { saveAccessToken } = makeSut()
 
     await simulateValidSubmit()
 
-    expect(localStorage.setItem).toHaveBeenCalledWith('accessToken', 'any_access_token')
-    expect(history.location.pathname).toBe('/')
-    expect(history.index).toBe(0)
+    expect(saveAccessToken).toHaveBeenCalledWith({ token: 'any_access_token' })
+    expect(saveAccessToken).toHaveBeenCalledTimes(1)
   })
 
   it('Should got to Signup page', async () => {
