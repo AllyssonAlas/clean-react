@@ -47,7 +47,9 @@ export class RequiredComparison {
     readonly fieldToCompare: string,
   ) {}
 
-  validate(input: object): string {
-    return new RequiredComparisonError(this.field).message
+  validate(input: object): string | undefined {
+    if (input[this.field] !== input[this.fieldToCompare]) {
+      return new RequiredComparisonError(this.field).message
+    }
   }
 }
