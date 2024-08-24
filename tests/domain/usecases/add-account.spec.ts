@@ -2,7 +2,7 @@ import { mock, MockProxy } from 'jest-mock-extended'
 
 import { AddAccount, setupAddAccount } from '@/domain/usecases'
 import { HttpPostClient, HttpStatusCode } from '@/domain/contracts/gateways'
-import { EmailInUseError } from '@/domain/errors'
+import { EmailInUseError, UnexpectedError } from '@/domain/errors'
 
 import { mockAddAccountInput } from '@/tests/domain/mocks'
 
@@ -37,5 +37,15 @@ describe('AddAccount', () => {
     const promise = sut(mockAddAccountInput())
 
     expect(promise).rejects.toThrow(new EmailInUseError())
+  })
+
+  it('Should throw if HttpPostClient returns 400', async () => {
+    httpPostClient.post.mockResolvedValueOnce({
+      statusCode: HttpStatusCode.badRequest,
+    })
+
+    const promise = sut(mockAddAccountInput())
+
+    await expect(promise).rejects.toThrow(new UnexpectedError())
   })
 })
