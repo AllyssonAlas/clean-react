@@ -16,6 +16,9 @@ describe('AddAccount', () => {
     httpPostClient = mock()
     httpPostClient.post.mockResolvedValue({
       statusCode: HttpStatusCode.ok,
+      body: {
+        accessToken: 'any_access_token',
+      },
     })
   })
 
@@ -67,5 +70,11 @@ describe('AddAccount', () => {
     const promise = sut(mockAddAccountInput())
 
     await expect(promise).rejects.toThrow(new UnexpectedError())
+  })
+
+  it('Should return an AccountModel if HttpPostClient return 200', async () => {
+    const account = await sut(mockAddAccountInput())
+
+    expect(account).toEqual({ accessToken: 'any_access_token' })
   })
 })
