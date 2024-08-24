@@ -1,5 +1,10 @@
-import { Required, RequiredEmail, RequiredMinLength } from '@/presentation/validation'
-import { RequiredFieldError, RequiredEmailError, RequiredMinLengthError } from '@/presentation/errors'
+import { Required, RequiredComparison, RequiredEmail, RequiredMinLength } from '@/presentation/validation'
+import {
+  RequiredFieldError,
+  RequiredEmailError,
+  RequiredMinLengthError,
+  RequiredComparisonError,
+} from '@/presentation/errors'
 
 describe('Required', () => {
   let sut: Required
@@ -88,5 +93,21 @@ describe('RequiredMinLength', () => {
     const error = sut.validate({ field: '12345' })
 
     expect(error).toBeUndefined()
+  })
+})
+
+describe('RequiredComparison', () => {
+  let sut: RequiredComparison
+
+  beforeEach(() => {
+    sut = new RequiredComparison('field', 'anotherField')
+  })
+
+  it('Should return error if input comparison is invalid', () => {
+    const error = sut.validate({
+      field: 'any_value',
+    })
+
+    expect(error).toEqual(new RequiredComparisonError('field').message)
   })
 })
