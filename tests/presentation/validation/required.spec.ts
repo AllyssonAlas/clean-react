@@ -110,4 +110,13 @@ describe('RequiredComparison', () => {
 
     expect(error).toEqual(new RequiredComparisonError('field').message)
   })
+
+  it('Should return undefined comparison is valid', () => {
+    const error = sut.validate({
+      field: 'any_value',
+      anotherField: 'any_value',
+    })
+
+    expect(error).toBeUndefined()
+  })
 })
