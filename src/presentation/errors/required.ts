@@ -18,3 +18,10 @@ export class RequiredMinLengthError extends Error {
     this.name = 'RequiredMinLengthError'
   }
 }
+
+export class RequiredComparisonError extends Error {
+  constructor(fieldToCompare: string) {
+    super(`Campo precisa ser igual a ${fieldToCompare}`)
+    this.name = 'RequiredComparisonError'
+  }
+}

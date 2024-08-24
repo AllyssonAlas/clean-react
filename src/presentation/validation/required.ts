@@ -1,5 +1,10 @@
 import { FieldValidation } from '@/presentation/protocols'
-import { RequiredFieldError, RequiredEmailError, RequiredMinLengthError } from '@/presentation/errors'
+import {
+  RequiredFieldError,
+  RequiredEmailError,
+  RequiredMinLengthError,
+  RequiredComparisonError,
+} from '@/presentation/errors'
 
 export class Required implements FieldValidation {
   constructor(readonly field: string) {}
@@ -33,5 +38,16 @@ export class RequiredMinLength implements FieldValidation {
     if (input[this.field].length < this.length) {
       return new RequiredMinLengthError(this.length).message
     }
+  }
+}
+
+export class RequiredComparison {
+  constructor(
+    readonly field: string,
+    readonly fieldToCompare: string,
+  ) {}
+
+  validate(input: object): string {
+    return new RequiredComparisonError(this.field).message
   }
 }
