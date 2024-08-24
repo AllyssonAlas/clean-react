@@ -1,5 +1,5 @@
 import { HttpPostClient, HttpStatusCode } from '@/domain/contracts/gateways'
-import { EmailInUseError } from '@/domain/errors'
+import { EmailInUseError, UnexpectedError } from '@/domain/errors'
 
 type Input = {
   email: string
@@ -14,10 +14,12 @@ export const setupAddAccount: Setup = (url, httpPostClient) => {
   return async (input) => {
     const response = await httpPostClient.post({ url, params: input })
     switch (response.statusCode) {
+      case HttpStatusCode.ok:
+        return null
       case HttpStatusCode.forbidden:
         throw new EmailInUseError()
       default:
-        return null
+        throw new UnexpectedError()
     }
   }
 }
