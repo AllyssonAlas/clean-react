@@ -48,4 +48,14 @@ describe('AddAccount', () => {
 
     await expect(promise).rejects.toThrow(new UnexpectedError())
   })
+
+  it('Should throw if HttpPostClient returns 500', async () => {
+    httpPostClient.post.mockResolvedValueOnce({
+      statusCode: HttpStatusCode.serverError,
+    })
+
+    const promise = sut(mockAddAccountInput())
+
+    await expect(promise).rejects.toThrow(new UnexpectedError())
+  })
 })
