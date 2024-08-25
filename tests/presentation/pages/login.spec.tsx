@@ -7,26 +7,7 @@ import { Login } from '@/presentation/pages'
 import { Validation } from '@/presentation/protocols'
 import { InvalidCredentialsError } from '@/domain/errors'
 
-type SutTypes = {
-  authentication: jest.Mock
-  saveAccessToken: jest.Mock
-  validation: MockProxy<Validation>
-}
-
 const history = createMemoryHistory({ initialEntries: ['/login'] })
-
-const makeSut = (error?: string): SutTypes => {
-  const validation = mock<Validation>()
-  validation.validate.mockReturnValue(error)
-  const saveAccessToken = jest.fn().mockResolvedValue(undefined)
-  const authentication = jest.fn().mockResolvedValue({ accessToken: 'any_access_token' })
-  render(
-    <Router location={history.location} navigator={history}>
-      <Login authentication={authentication} saveAccessToken={saveAccessToken} validation={validation} />
-    </Router>,
-  )
-  return { authentication, saveAccessToken, validation }
-}
 
 const populateInput = (field: string): void => {
   const input = screen.getByTestId(field)
@@ -40,10 +21,36 @@ const simulateValidSubmit = async (): Promise<void> => {
 }
 
 describe('Login Page', () => {
+  let validation: MockProxy<Validation>
+  let saveAccessToken: jest.Mock
+  let authentication: jest.Mock
+
+  beforeAll(() => {
+    validation = mock<Validation>()
+    saveAccessToken = jest.fn().mockResolvedValue(undefined)
+    authentication = jest.fn().mockResolvedValue({ accessToken: 'any_access_token' })
+  })
+
+  beforeEach(() => {
+    validation.validate.mockReturnValue(undefined)
+    render(
+      <Router location={history.location} navigator={history}>
+        <Login authentication={authentication} saveAccessToken={saveAccessToken} validation={validation} />
+      </Router>,
+    )
+  })
+
   afterEach(cleanup)
 
-  it('Should start with initial state', () => {
-    makeSut('validation_error')
+  it('Should start with initial state', async () => {
+    validation.validate.mockReturnValue('validation_error')
+    cleanup()
+    render(
+      <Router location={history.location} navigator={history}>
+        <Login authentication={authentication} saveAccessToken={saveAccessToken} validation={validation} />
+      </Router>,
+    )
+
     const errorWrap = screen.getByTestId('error-wrap')
     const submitButton = screen.getByTestId('submit') as HTMLButtonElement
     const emailStatus = screen.getByTestId('email-status')
@@ -58,7 +65,7 @@ describe('Login Page', () => {
   })
 
   it('Should show email error if validation fails', () => {
-    makeSut('validation_error')
+    validation.validate.mockReturnValue('validation_error')
 
     populateInput('email')
 
@@ -67,8 +74,8 @@ describe('Login Page', () => {
     expect(emailStatus.textContent).toBe('🔴')
   })
 
-  it('Should show password error if validation fails', () => {
-    makeSut('validation_error')
+  it('Should show password error if validation fails', async () => {
+    validation.validate.mockReturnValue('validation_error')
 
     populateInput('password')
 
@@ -78,8 +85,6 @@ describe('Login Page', () => {
   })
 
   it('Should show valid email state if validation succeeds', () => {
-    makeSut()
-
     populateInput('email')
 
     const emailStatus = screen.getByTestId('email-status')
@@ -88,8 +93,6 @@ describe('Login Page', () => {
   })
 
   it('Should show valid password state if validation succeeds', () => {
-    makeSut()
-
     populateInput('password')
 
     const passwordStatus = screen.getByTestId('password-status')
@@ -98,7 +101,6 @@ describe('Login Page', () => {
   })
 
   it('Should enable submit button if form is valid', () => {
-    makeSut()
     populateInput('email')
     populateInput('password')
 
@@ -108,8 +110,6 @@ describe('Login Page', () => {
   })
 
   it('Should show spinner on submit', () => {
-    makeSut()
-
     simulateValidSubmit()
 
     const spinner = screen.queryByTestId('spinner')
@@ -117,8 +117,6 @@ describe('Login Page', () => {
   })
 
   it('Should call Authentication with correct input', () => {
-    const { authentication } = makeSut()
-
     simulateValidSubmit()
 
     expect(authentication).toHaveBeenCalledWith(
@@ -131,8 +129,6 @@ describe('Login Page', () => {
   })
 
   it('Should call Authentication only once', () => {
-    const { authentication } = makeSut()
-
     simulateValidSubmit()
     simulateValidSubmit()
 
@@ -140,7 +136,7 @@ describe('Login Page', () => {
   })
 
   it('Should not call Authentication if form is invalid', () => {
-    const { authentication } = makeSut('validation_error')
+    validation.validate.mockReturnValue('validation_error')
 
     simulateValidSubmit()
 
@@ -148,7 +144,6 @@ describe('Login Page', () => {
   })
 
   it('Should present error if Authentication fails', async () => {
-    const { authentication } = makeSut()
     const error = new InvalidCredentialsError()
     authentication.mockRejectedValueOnce(error)
 
@@ -161,8 +156,6 @@ describe('Login Page', () => {
   })
 
   it('Should call SaveAccessToken on success', async () => {
-    const { saveAccessToken } = makeSut()
-
     await simulateValidSubmit()
 
     expect(saveAccessToken).toHaveBeenCalledWith({ token: 'any_access_token' })
@@ -170,7 +163,6 @@ describe('Login Page', () => {
   })
 
   it('Should present error if SaveAccessToken fails', async () => {
-    const { saveAccessToken } = makeSut()
     const error = new InvalidCredentialsError()
     saveAccessToken.mockRejectedValueOnce(error)
 
@@ -183,8 +175,6 @@ describe('Login Page', () => {
   })
 
   it('Should got to Signup page', async () => {
-    makeSut()
-
     fireEvent.click(screen.getByTestId('signup'))
 
     expect(history.location.pathname).toBe('/signup')
