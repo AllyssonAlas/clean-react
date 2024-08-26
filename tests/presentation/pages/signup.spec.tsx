@@ -19,14 +19,16 @@ const simulateValidSubmit = async (): Promise<void> => {
 
 describe('Signup Page', () => {
   let validation: MockProxy<Validation>
+  let addAccount: jest.Mock
 
   beforeAll(() => {
     validation = mock<Validation>()
+    addAccount = jest.fn()
   })
 
   beforeEach(() => {
     validation.validate.mockReturnValue(undefined)
-    render(<SignUp validation={validation} />)
+    render(<SignUp addAccount={addAccount} validation={validation} />)
   })
 
   afterEach(cleanup)
@@ -34,7 +36,7 @@ describe('Signup Page', () => {
   it('Should start with initial state', async () => {
     validation.validate.mockReturnValue('validation_error')
     cleanup()
-    render(<SignUp validation={validation} />)
+    render(<SignUp addAccount={addAccount} validation={validation} />)
 
     const errorWrap = screen.getByTestId('error-wrap')
     const submitButton = screen.getByTestId('submit') as HTMLButtonElement
@@ -143,5 +145,19 @@ describe('Signup Page', () => {
 
     const spinner = screen.queryByTestId('spinner')
     expect(spinner).toBeTruthy()
+  })
+
+  it('Should call AddAccount with correct input', () => {
+    simulateValidSubmit()
+
+    expect(addAccount).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: 'any_name',
+        email: 'any_email',
+        password: 'any_password',
+        passwordConfirmation: 'any_passwordConfirmation',
+      }),
+    )
+    expect(addAccount).toHaveBeenCalledTimes(1)
   })
 })
