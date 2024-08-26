@@ -16,11 +16,12 @@ export const SignUp: React.FC<Props> = ({ validation }) => {
     name: '',
     email: '',
     password: '',
+    passwordConfirmation: '',
     formError: '',
     nameError: '',
     emailError: '',
     passwordError: '',
-    passwordConfirmationError: 'Campo obrigatório',
+    passwordConfirmationError: '',
   })
 
   useEffect(() => {
@@ -29,8 +30,9 @@ export const SignUp: React.FC<Props> = ({ validation }) => {
       nameError: validation.validate('name', state),
       emailError: validation.validate('email', state),
       passwordError: validation.validate('password', state),
+      passwordConfirmationError: validation.validate('passwordConfirmation', state),
     }))
-  }, [state.name, state.email, state.password])
+  }, [state.name, state.email, state.password, state.passwordConfirmation])
 
   return (
     <div className={'signup'}>
