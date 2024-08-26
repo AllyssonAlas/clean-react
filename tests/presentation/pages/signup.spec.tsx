@@ -17,6 +17,7 @@ describe('Signup Page', () => {
   })
 
   beforeEach(() => {
+    validation.validate.mockReturnValue(undefined)
     render(<SignUp validation={validation} />)
   })
 
@@ -84,5 +85,37 @@ describe('Signup Page', () => {
     const passwordConfirmationStatus = screen.getByTestId('passwordConfirmation-status')
     expect(passwordConfirmationStatus.title).toBe('validation_error')
     expect(passwordConfirmationStatus.textContent).toBe('🔴')
+  })
+
+  it('Should show valid name state if validation succeeds', () => {
+    populateInput('name')
+
+    const nameStatus = screen.getByTestId('name-status')
+    expect(nameStatus.title).toBe('Tudo certo!')
+    expect(nameStatus.textContent).toBe('🟢')
+  })
+
+  it('Should show valid email state if validation succeeds', () => {
+    populateInput('email')
+
+    const emailStatus = screen.getByTestId('email-status')
+    expect(emailStatus.title).toBe('Tudo certo!')
+    expect(emailStatus.textContent).toBe('🟢')
+  })
+
+  it('Should show valid password state if validation succeeds', () => {
+    populateInput('password')
+
+    const passwordStatus = screen.getByTestId('password-status')
+    expect(passwordStatus.title).toBe('Tudo certo!')
+    expect(passwordStatus.textContent).toBe('🟢')
+  })
+
+  it('Should show valid passwordConfirmation state if validation succeeds', () => {
+    populateInput('passwordConfirmation')
+
+    const passwordConfirmationStatus = screen.getByTestId('passwordConfirmation-status')
+    expect(passwordConfirmationStatus.title).toBe('Tudo certo!')
+    expect(passwordConfirmationStatus.textContent).toBe('🟢')
   })
 })
