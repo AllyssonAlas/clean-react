@@ -29,6 +29,7 @@ export const SignUp: React.FC<Props> = ({ addAccount, validation }) => {
     !!state.nameError || !!state.emailError || !!state.passwordError || !!state.passwordConfirmationError
   const handleSubmit = async (event: React.FormEvent): Promise<void> => {
     event.preventDefault()
+    if (state.loading) return
     setState((prevState) => ({ ...prevState, loading: true }))
     await addAccount(state)
   }
