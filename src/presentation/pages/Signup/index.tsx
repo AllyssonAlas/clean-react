@@ -15,10 +15,11 @@ export const SignUp: React.FC<Props> = ({ validation }) => {
     loading: false,
     name: '',
     email: '',
+    password: '',
     formError: '',
     nameError: '',
     emailError: '',
-    passwordError: 'Campo obrigatório',
+    passwordError: '',
     passwordConfirmationError: 'Campo obrigatório',
   })
 
@@ -27,8 +28,9 @@ export const SignUp: React.FC<Props> = ({ validation }) => {
       ...prevState,
       nameError: validation.validate('name', state),
       emailError: validation.validate('email', state),
+      passwordError: validation.validate('password', state),
     }))
-  }, [state.name, state.email])
+  }, [state.name, state.email, state.password])
 
   return (
     <div className={'signup'}>
