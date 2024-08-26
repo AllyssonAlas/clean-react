@@ -9,6 +9,14 @@ const populateInput = (field: string): void => {
   fireEvent.input(input, { target: { value: `any_${field}` } })
 }
 
+const simulateValidSubmit = async (): Promise<void> => {
+  populateInput('name')
+  populateInput('email')
+  populateInput('password')
+  populateInput('passwordConfirmation')
+  await fireEvent.submit(screen.getByTestId('form'))
+}
+
 describe('Signup Page', () => {
   let validation: MockProxy<Validation>
 
@@ -128,5 +136,12 @@ describe('Signup Page', () => {
     const submitButton = screen.getByTestId('submit') as HTMLButtonElement
 
     expect(submitButton.disabled).toBe(false)
+  })
+
+  it('Should show spinner on submit', () => {
+    simulateValidSubmit()
+
+    const spinner = screen.queryByTestId('spinner')
+    expect(spinner).toBeTruthy()
   })
 })
