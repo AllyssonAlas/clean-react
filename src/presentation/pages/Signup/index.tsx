@@ -14,9 +14,10 @@ export const SignUp: React.FC<Props> = ({ validation }) => {
   const [state, setState] = useState({
     loading: false,
     name: '',
+    email: '',
     formError: '',
     nameError: '',
-    emailError: 'Campo obrigatório',
+    emailError: '',
     passwordError: 'Campo obrigatório',
     passwordConfirmationError: 'Campo obrigatório',
   })
@@ -25,8 +26,9 @@ export const SignUp: React.FC<Props> = ({ validation }) => {
     setState((prevState) => ({
       ...prevState,
       nameError: validation.validate('name', state),
+      emailError: validation.validate('email', state),
     }))
-  }, [state.name])
+  }, [state.name, state.email])
 
   return (
     <div className={'signup'}>
