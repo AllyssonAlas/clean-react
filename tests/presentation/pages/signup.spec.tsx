@@ -1,6 +1,7 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { mock, MockProxy } from 'jest-mock-extended'
 
+import { EmailInUseError } from '@/domain/errors'
 import { SignUp } from '@/presentation/pages'
 import { Validation } from '@/presentation/protocols'
 
@@ -174,5 +175,17 @@ describe('Signup Page', () => {
     simulateValidSubmit()
 
     expect(addAccount).toHaveBeenCalledTimes(0)
+  })
+
+  it('Should present error if Authentication fails', async () => {
+    const error = new EmailInUseError()
+    addAccount.mockRejectedValueOnce(error)
+
+    simulateValidSubmit()
+
+    const errorWrap = await screen.findByTestId('error-wrap')
+    const mainError = screen.getByTestId('main-error')
+    expect(errorWrap.childElementCount).toBe(1)
+    expect(mainError.textContent).toBe(error.message)
   })
 })
