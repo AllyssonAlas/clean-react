@@ -26,10 +26,14 @@ export const SignUp: React.FC<Props> = ({ addAccount, validation }) => {
     passwordConfirmationError: '',
   })
   const isSubmitDisabled =
-    !!state.nameError || !!state.emailError || !!state.passwordError || !!state.passwordConfirmationError
+    !!state.nameError ||
+    !!state.emailError ||
+    !!state.passwordError ||
+    !!state.passwordConfirmationError ||
+    state.loading
   const handleSubmit = async (event: React.FormEvent): Promise<void> => {
     event.preventDefault()
-    if (state.loading) return
+    if (isSubmitDisabled) return
     setState((prevState) => ({ ...prevState, loading: true }))
     await addAccount(state)
   }
