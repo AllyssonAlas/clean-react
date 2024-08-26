@@ -42,7 +42,7 @@ describe('Signup Page', () => {
     expect(emailStatus.textContent).toBe('🔴')
     expect(passwordStatus.title).toBe('validation_error')
     expect(passwordStatus.textContent).toBe('🔴')
-    expect(passwordConfirmationStatus.title).toBe('Campo obrigatório')
+    expect(passwordConfirmationStatus.title).toBe('validation_error')
     expect(passwordConfirmationStatus.textContent).toBe('🔴')
   })
 
@@ -74,5 +74,15 @@ describe('Signup Page', () => {
     const passwordStatus = screen.getByTestId('password-status')
     expect(passwordStatus.title).toBe('validation_error')
     expect(passwordStatus.textContent).toBe('🔴')
+  })
+
+  it('Should show passwordConfirmation error if validation fails', async () => {
+    validation.validate.mockReturnValue('validation_error')
+
+    populateInput('passwordConfirmation')
+
+    const passwordConfirmationStatus = screen.getByTestId('passwordConfirmation-status')
+    expect(passwordConfirmationStatus.title).toBe('validation_error')
+    expect(passwordConfirmationStatus.textContent).toBe('🔴')
   })
 })
