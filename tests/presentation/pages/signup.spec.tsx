@@ -118,4 +118,15 @@ describe('Signup Page', () => {
     expect(passwordConfirmationStatus.title).toBe('Tudo certo!')
     expect(passwordConfirmationStatus.textContent).toBe('🟢')
   })
+
+  it('Should enable submit button if form is valid', () => {
+    populateInput('name')
+    populateInput('email')
+    populateInput('password')
+    populateInput('passwordConfirmation')
+
+    const submitButton = screen.getByTestId('submit') as HTMLButtonElement
+
+    expect(submitButton.disabled).toBe(false)
+  })
 })
