@@ -160,4 +160,11 @@ describe('Signup Page', () => {
     )
     expect(addAccount).toHaveBeenCalledTimes(1)
   })
+
+  it('Should call AddAccount only once', () => {
+    simulateValidSubmit()
+    simulateValidSubmit()
+
+    expect(addAccount).toHaveBeenCalledTimes(1)
+  })
 })
