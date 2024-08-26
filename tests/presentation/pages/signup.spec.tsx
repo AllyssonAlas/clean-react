@@ -167,4 +167,12 @@ describe('Signup Page', () => {
 
     expect(addAccount).toHaveBeenCalledTimes(1)
   })
+
+  it('Should not call AddAccount if form is invalid', () => {
+    validation.validate.mockReturnValue('validation_error')
+
+    simulateValidSubmit()
+
+    expect(addAccount).toHaveBeenCalledTimes(0)
+  })
 })
