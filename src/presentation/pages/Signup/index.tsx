@@ -37,7 +37,7 @@ export const SignUp: React.FC<Props> = ({ validation }) => {
   return (
     <div className={'signup'}>
       <LoginHeader />
-      <FormContext.Provider value={{ state, setState } as any}>
+      <FormContext.Provider value={{ state, setState }}>
         <form className={'form'}>
           <h2>Criar Conta</h2>
           <Input type='text' name='name' placeholder='Digite seu nome' />
