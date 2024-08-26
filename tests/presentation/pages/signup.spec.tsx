@@ -38,7 +38,7 @@ describe('Signup Page', () => {
     expect(submitButton.disabled).toBe(true)
     expect(nameStatus.title).toBe('validation_error')
     expect(nameStatus.textContent).toBe('🔴')
-    expect(emailStatus.title).toBe('Campo obrigatório')
+    expect(emailStatus.title).toBe('validation_error')
     expect(emailStatus.textContent).toBe('🔴')
     expect(passwordStatus.title).toBe('Campo obrigatório')
     expect(passwordStatus.textContent).toBe('🔴')
@@ -54,5 +54,15 @@ describe('Signup Page', () => {
     const nameStatus = screen.getByTestId('name-status')
     expect(nameStatus.title).toBe('validation_error')
     expect(nameStatus.textContent).toBe('🔴')
+  })
+
+  it('Should show email error if validation fails', () => {
+    validation.validate.mockReturnValue('validation_error')
+
+    populateInput('email')
+
+    const emailStatus = screen.getByTestId('email-status')
+    expect(emailStatus.title).toBe('validation_error')
+    expect(emailStatus.textContent).toBe('🔴')
   })
 })
