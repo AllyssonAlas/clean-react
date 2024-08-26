@@ -33,9 +33,17 @@ export const SignUp: React.FC<Props> = ({ addAccount, validation }) => {
     state.loading
   const handleSubmit = async (event: React.FormEvent): Promise<void> => {
     event.preventDefault()
-    if (isSubmitDisabled) return
-    setState((prevState) => ({ ...prevState, loading: true }))
-    await addAccount(state)
+    try {
+      if (isSubmitDisabled) return
+      setState((prevState) => ({ ...prevState, loading: true }))
+      await addAccount(state)
+    } catch (error) {
+      setState((prevState) => ({
+        ...prevState,
+        loading: false,
+        formError: error.message,
+      }))
+    }
   }
   useEffect(() => {
     setState((prevState) => ({
