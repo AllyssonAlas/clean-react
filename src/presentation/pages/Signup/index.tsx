@@ -25,6 +25,10 @@ export const SignUp: React.FC<Props> = ({ validation }) => {
   })
   const isSubmitDisabled =
     !!state.nameError || !!state.emailError || !!state.passwordError || !!state.passwordConfirmationError
+  const handleSubmit = async (event: React.FormEvent): Promise<void> => {
+    event.preventDefault()
+    setState((prevState) => ({ ...prevState, loading: true }))
+  }
   useEffect(() => {
     setState((prevState) => ({
       ...prevState,
@@ -39,7 +43,7 @@ export const SignUp: React.FC<Props> = ({ validation }) => {
     <div className={'signup'}>
       <LoginHeader />
       <FormContext.Provider value={{ state, setState }}>
-        <form className={'form'}>
+        <form className={'form'} data-testid='form' onSubmit={handleSubmit}>
           <h2>Criar Conta</h2>
           <Input type='text' name='name' placeholder='Digite seu nome' />
           <Input type='email' name='email' placeholder='Digite seu e-mail' />
