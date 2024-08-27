@@ -223,4 +223,11 @@ describe('Signup Page', () => {
     expect(errorWrap.childElementCount).toBe(1)
     expect(mainError.textContent).toBe(error.message)
   })
+
+  it('Should got to Login page', async () => {
+    fireEvent.click(screen.getByTestId('login'))
+
+    expect(history.location.pathname).toBe('/login')
+    expect(history.index).toBe(1)
+  })
 })
