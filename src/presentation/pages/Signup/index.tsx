@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 
 import { AddAccount, SaveAccessToken } from '@/domain/usecases'
 import { FormContext } from '@/presentation/contexts'
-import { LoginHeader, Input, FormStatus, Footer } from '@/presentation/components'
+import { LoginHeader, Input, SubmitButton, FormStatus, Footer } from '@/presentation/components'
 import { Validation } from '@/presentation/protocols'
 
 import './styles.scss'
@@ -70,9 +70,7 @@ export const SignUp: React.FC<Props> = ({ addAccount, saveAccessToken, validatio
           <Input type='email' name='email' placeholder='Digite seu e-mail' />
           <Input type='password' name='password' placeholder='Digite sua senha' />
           <Input type='password' name='passwordConfirmation' placeholder='Repita sua senha' />
-          <button className={'submit'} data-testid='submit' disabled={isSubmitDisabled} type='submit'>
-            Entrar
-          </button>
+          <SubmitButton disabled={isSubmitDisabled} text='Cadastrar' />
           <Link to='/login' className={'link'} data-testid='login'>
             Voltar Para Login
           </Link>
