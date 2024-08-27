@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 import { AddAccount, SaveAccessToken } from '@/domain/usecases'
 import { FormContext } from '@/presentation/contexts'
@@ -73,7 +73,9 @@ export const SignUp: React.FC<Props> = ({ addAccount, saveAccessToken, validatio
           <button className={'submit'} data-testid='submit' disabled={isSubmitDisabled} type='submit'>
             Entrar
           </button>
-          <span className={'link'}>Voltar Para Login</span>
+          <Link to='/login' className={'link'} data-testid='login'>
+            Voltar Para Login
+          </Link>
           <FormStatus />
         </form>
       </FormContext.Provider>
