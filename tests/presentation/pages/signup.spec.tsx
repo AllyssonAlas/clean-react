@@ -211,4 +211,16 @@ describe('Signup Page', () => {
     expect(history.location.pathname).toBe('/')
     expect(history.index).toBe(0)
   })
+
+  it('Should present error if SaveAccessToken fails', async () => {
+    const error = new EmailInUseError()
+    saveAccessToken.mockRejectedValueOnce(error)
+
+    simulateValidSubmit()
+
+    const errorWrap = await screen.findByTestId('error-wrap')
+    const mainError = await screen.findByTestId('main-error')
+    expect(errorWrap.childElementCount).toBe(1)
+    expect(mainError.textContent).toBe(error.message)
+  })
 })
