@@ -1,9 +1,13 @@
+import { Router } from 'react-router-dom'
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { mock, MockProxy } from 'jest-mock-extended'
+import { createMemoryHistory } from 'history'
 
 import { EmailInUseError } from '@/domain/errors'
 import { SignUp } from '@/presentation/pages'
 import { Validation } from '@/presentation/protocols'
+
+const history = createMemoryHistory({ initialEntries: ['/signup'] })
 
 const populateInput = (field: string): void => {
   const input = screen.getByTestId(field)
@@ -20,16 +24,22 @@ const simulateValidSubmit = async (): Promise<void> => {
 
 describe('Signup Page', () => {
   let validation: MockProxy<Validation>
+  let saveAccessToken: jest.Mock
   let addAccount: jest.Mock
 
   beforeAll(() => {
     validation = mock<Validation>()
-    addAccount = jest.fn()
+    saveAccessToken = jest.fn().mockResolvedValue(undefined)
+    addAccount = jest.fn().mockResolvedValue({ accessToken: 'any_access_token' })
   })
 
   beforeEach(() => {
     validation.validate.mockReturnValue(undefined)
-    render(<SignUp addAccount={addAccount} validation={validation} />)
+    render(
+      <Router location={history.location} navigator={history}>
+        <SignUp addAccount={addAccount} saveAccessToken={saveAccessToken} validation={validation} />
+      </Router>,
+    )
   })
 
   afterEach(cleanup)
@@ -37,7 +47,11 @@ describe('Signup Page', () => {
   it('Should start with initial state', async () => {
     validation.validate.mockReturnValue('validation_error')
     cleanup()
-    render(<SignUp addAccount={addAccount} validation={validation} />)
+    render(
+      <Router location={history.location} navigator={history}>
+        <SignUp addAccount={addAccount} saveAccessToken={saveAccessToken} validation={validation} />
+      </Router>,
+    )
 
     const errorWrap = screen.getByTestId('error-wrap')
     const submitButton = screen.getByTestId('submit') as HTMLButtonElement
@@ -187,5 +201,14 @@ describe('Signup Page', () => {
     const mainError = screen.getByTestId('main-error')
     expect(errorWrap.childElementCount).toBe(1)
     expect(mainError.textContent).toBe(error.message)
+  })
+
+  it('Should call SaveAccessToken on success', async () => {
+    await simulateValidSubmit()
+
+    expect(saveAccessToken).toHaveBeenCalledWith({ token: 'any_access_token' })
+    expect(saveAccessToken).toHaveBeenCalledTimes(1)
+    expect(history.location.pathname).toBe('/')
+    expect(history.index).toBe(0)
   })
 })
