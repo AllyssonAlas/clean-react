@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
-import { AddAccount } from '@/domain/usecases'
+import { AddAccount, SaveAccessToken } from '@/domain/usecases'
 import { FormContext } from '@/presentation/contexts'
 import { LoginHeader, Input, FormStatus, Footer } from '@/presentation/components'
 import { Validation } from '@/presentation/protocols'
@@ -9,10 +10,12 @@ import './styles.scss'
 
 type Props = {
   addAccount?: AddAccount
+  saveAccessToken?: SaveAccessToken
   validation?: Validation
 }
 
-export const SignUp: React.FC<Props> = ({ addAccount, validation }) => {
+export const SignUp: React.FC<Props> = ({ addAccount, saveAccessToken, validation }) => {
+  const navigate = useNavigate()
   const [state, setState] = useState({
     loading: false,
     name: '',
@@ -36,7 +39,9 @@ export const SignUp: React.FC<Props> = ({ addAccount, validation }) => {
     try {
       if (isSubmitDisabled) return
       setState((prevState) => ({ ...prevState, loading: true }))
-      await addAccount(state)
+      const { accessToken } = await addAccount(state)
+      await saveAccessToken({ token: accessToken })
+      navigate('/', { replace: true })
     } catch (error) {
       setState((prevState) => ({
         ...prevState,
