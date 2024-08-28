@@ -1,5 +1,5 @@
 import { FieldValidation } from '@/presentation/protocols'
-import { Required, RequiredEmail, RequiredMinLength } from '@/presentation/validation'
+import { Required, RequiredEmail, RequiredMinLength, RequiredComparison } from '@/presentation/validation'
 
 export class ValidationBuilder {
   private constructor(
@@ -23,6 +23,11 @@ export class ValidationBuilder {
 
   min(length: number): ValidationBuilder {
     this.validators.push(new RequiredMinLength(this.field, length))
+    return this
+  }
+
+  sameAs(fieldToCompare: string): ValidationBuilder {
+    this.validators.push(new RequiredComparison(this.field, fieldToCompare))
     return this
   }
 
