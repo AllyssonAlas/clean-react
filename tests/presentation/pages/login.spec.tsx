@@ -7,12 +7,16 @@ import { Login } from '@/presentation/pages'
 import { Validation } from '@/presentation/protocols'
 import { InvalidCredentialsError } from '@/domain/errors'
 
-const history = createMemoryHistory({ initialEntries: ['/login'] })
+import {
+  populateInput,
+  testButtonIsDisabled,
+  testChildCount,
+  testElementExists,
+  testElementText,
+  testStatusForField,
+} from '@/tests/presentation/utils'
 
-const populateInput = (field: string): void => {
-  const input = screen.getByTestId(field)
-  fireEvent.input(input, { target: { value: `any_${field}` } })
-}
+const history = createMemoryHistory({ initialEntries: ['/login'] })
 
 const simulateValidSubmit = async (): Promise<void> => {
   populateInput('email')
@@ -45,23 +49,17 @@ describe('Login Page', () => {
   it('Should start with initial state', async () => {
     validation.validate.mockReturnValue('validation_error')
     cleanup()
+
     render(
       <Router location={history.location} navigator={history}>
         <Login authentication={authentication} saveAccessToken={saveAccessToken} validation={validation} />
       </Router>,
     )
 
-    const errorWrap = screen.getByTestId('error-wrap')
-    const submitButton = screen.getByTestId('submit') as HTMLButtonElement
-    const emailStatus = screen.getByTestId('email-status')
-    const passwordStatus = screen.getByTestId('password-status')
-
-    expect(errorWrap.childElementCount).toBe(0)
-    expect(submitButton.disabled).toBe(true)
-    expect(emailStatus.title).toBe('validation_error')
-    expect(emailStatus.textContent).toBe('🔴')
-    expect(passwordStatus.title).toBe('validation_error')
-    expect(passwordStatus.textContent).toBe('🔴')
+    testChildCount('error-wrap', 0)
+    testButtonIsDisabled('submit', true)
+    testStatusForField('email', 'validation_error')
+    testStatusForField('password', 'validation_error')
   })
 
   it('Should show email error if validation fails', () => {
@@ -69,9 +67,7 @@ describe('Login Page', () => {
 
     populateInput('email')
 
-    const emailStatus = screen.getByTestId('email-status')
-    expect(emailStatus.title).toBe('validation_error')
-    expect(emailStatus.textContent).toBe('🔴')
+    testStatusForField('email', 'validation_error')
   })
 
   it('Should show password error if validation fails', async () => {
@@ -79,41 +75,32 @@ describe('Login Page', () => {
 
     populateInput('password')
 
-    const passwordStatus = screen.getByTestId('password-status')
-    expect(passwordStatus.title).toBe('validation_error')
-    expect(passwordStatus.textContent).toBe('🔴')
+    testStatusForField('password', 'validation_error')
   })
 
   it('Should show valid email state if validation succeeds', () => {
     populateInput('email')
 
-    const emailStatus = screen.getByTestId('email-status')
-    expect(emailStatus.title).toBe('Tudo certo!')
-    expect(emailStatus.textContent).toBe('🟢')
+    testStatusForField('email')
   })
 
   it('Should show valid password state if validation succeeds', () => {
     populateInput('password')
 
-    const passwordStatus = screen.getByTestId('password-status')
-    expect(passwordStatus.title).toBe('Tudo certo!')
-    expect(passwordStatus.textContent).toBe('🟢')
+    testStatusForField('password')
   })
 
   it('Should enable submit button if form is valid', () => {
     populateInput('email')
     populateInput('password')
 
-    const submitButton = screen.getByTestId('submit') as HTMLButtonElement
-
-    expect(submitButton.disabled).toBe(false)
+    testButtonIsDisabled('submit', false)
   })
 
   it('Should show spinner on submit', () => {
     simulateValidSubmit()
 
-    const spinner = screen.queryByTestId('spinner')
-    expect(spinner).toBeTruthy()
+    testElementExists('spinner')
   })
 
   it('Should call Authentication with correct input', () => {
@@ -148,11 +135,10 @@ describe('Login Page', () => {
     authentication.mockRejectedValueOnce(error)
 
     simulateValidSubmit()
-
     const errorWrap = await screen.findByTestId('error-wrap')
-    const mainError = screen.getByTestId('main-error')
+
     expect(errorWrap.childElementCount).toBe(1)
-    expect(mainError.textContent).toBe(error.message)
+    testElementText('main-error', error.message)
   })
 
   it('Should call SaveAccessToken on success', async () => {
@@ -167,10 +153,9 @@ describe('Login Page', () => {
     saveAccessToken.mockRejectedValueOnce(error)
 
     simulateValidSubmit()
-
-    const errorWrap = await screen.findByTestId('error-wrap')
     const mainError = await screen.findByTestId('main-error')
-    expect(errorWrap.childElementCount).toBe(1)
+
+    testChildCount('error-wrap', 1)
     expect(mainError.textContent).toBe(error.message)
   })
 

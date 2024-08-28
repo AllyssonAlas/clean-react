@@ -8,7 +8,7 @@ import {
 import { makeSignupValidation } from '@/main/factories/presentation/validation'
 
 describe('SignUpValidationFactory', () => {
-  test('Should make ValidationComposite with correct validations', () => {
+  it('Should make ValidationComposite with correct validations', () => {
     const composite = makeSignupValidation()
 
     expect(composite).toEqual(

@@ -7,12 +7,16 @@ import { EmailInUseError } from '@/domain/errors'
 import { SignUp } from '@/presentation/pages'
 import { Validation } from '@/presentation/protocols'
 
-const history = createMemoryHistory({ initialEntries: ['/signup'] })
+import {
+  populateInput,
+  testButtonIsDisabled,
+  testChildCount,
+  testElementExists,
+  testElementText,
+  testStatusForField,
+} from '@/tests/presentation/utils'
 
-const populateInput = (field: string): void => {
-  const input = screen.getByTestId(field)
-  fireEvent.input(input, { target: { value: `any_${field}` } })
-}
+const history = createMemoryHistory({ initialEntries: ['/signup'] })
 
 const simulateValidSubmit = async (): Promise<void> => {
   populateInput('name')
@@ -47,29 +51,19 @@ describe('Signup Page', () => {
   it('Should start with initial state', async () => {
     validation.validate.mockReturnValue('validation_error')
     cleanup()
+
     render(
       <Router location={history.location} navigator={history}>
         <SignUp addAccount={addAccount} saveAccessToken={saveAccessToken} validation={validation} />
       </Router>,
     )
 
-    const errorWrap = screen.getByTestId('error-wrap')
-    const submitButton = screen.getByTestId('submit') as HTMLButtonElement
-    const nameStatus = screen.getByTestId('name-status')
-    const emailStatus = screen.getByTestId('email-status')
-    const passwordStatus = screen.getByTestId('password-status')
-    const passwordConfirmationStatus = screen.getByTestId('passwordConfirmation-status')
-
-    expect(errorWrap.childElementCount).toBe(0)
-    expect(submitButton.disabled).toBe(true)
-    expect(nameStatus.title).toBe('validation_error')
-    expect(nameStatus.textContent).toBe('🔴')
-    expect(emailStatus.title).toBe('validation_error')
-    expect(emailStatus.textContent).toBe('🔴')
-    expect(passwordStatus.title).toBe('validation_error')
-    expect(passwordStatus.textContent).toBe('🔴')
-    expect(passwordConfirmationStatus.title).toBe('validation_error')
-    expect(passwordConfirmationStatus.textContent).toBe('🔴')
+    testChildCount('error-wrap', 0)
+    testButtonIsDisabled('submit', true)
+    testStatusForField('name', 'validation_error')
+    testStatusForField('email', 'validation_error')
+    testStatusForField('password', 'validation_error')
+    testStatusForField('passwordConfirmation', 'validation_error')
   })
 
   it('Should show name error if validation fails', () => {
@@ -77,9 +71,7 @@ describe('Signup Page', () => {
 
     populateInput('name')
 
-    const nameStatus = screen.getByTestId('name-status')
-    expect(nameStatus.title).toBe('validation_error')
-    expect(nameStatus.textContent).toBe('🔴')
+    testStatusForField('name', 'validation_error')
   })
 
   it('Should show email error if validation fails', () => {
@@ -87,9 +79,7 @@ describe('Signup Page', () => {
 
     populateInput('email')
 
-    const emailStatus = screen.getByTestId('email-status')
-    expect(emailStatus.title).toBe('validation_error')
-    expect(emailStatus.textContent).toBe('🔴')
+    testStatusForField('email', 'validation_error')
   })
 
   it('Should show password error if validation fails', async () => {
@@ -97,9 +87,7 @@ describe('Signup Page', () => {
 
     populateInput('password')
 
-    const passwordStatus = screen.getByTestId('password-status')
-    expect(passwordStatus.title).toBe('validation_error')
-    expect(passwordStatus.textContent).toBe('🔴')
+    testStatusForField('password', 'validation_error')
   })
 
   it('Should show passwordConfirmation error if validation fails', async () => {
@@ -107,41 +95,31 @@ describe('Signup Page', () => {
 
     populateInput('passwordConfirmation')
 
-    const passwordConfirmationStatus = screen.getByTestId('passwordConfirmation-status')
-    expect(passwordConfirmationStatus.title).toBe('validation_error')
-    expect(passwordConfirmationStatus.textContent).toBe('🔴')
+    testStatusForField('passwordConfirmation', 'validation_error')
   })
 
   it('Should show valid name state if validation succeeds', () => {
     populateInput('name')
 
-    const nameStatus = screen.getByTestId('name-status')
-    expect(nameStatus.title).toBe('Tudo certo!')
-    expect(nameStatus.textContent).toBe('🟢')
+    testStatusForField('name')
   })
 
   it('Should show valid email state if validation succeeds', () => {
     populateInput('email')
 
-    const emailStatus = screen.getByTestId('email-status')
-    expect(emailStatus.title).toBe('Tudo certo!')
-    expect(emailStatus.textContent).toBe('🟢')
+    testStatusForField('email')
   })
 
   it('Should show valid password state if validation succeeds', () => {
     populateInput('password')
 
-    const passwordStatus = screen.getByTestId('password-status')
-    expect(passwordStatus.title).toBe('Tudo certo!')
-    expect(passwordStatus.textContent).toBe('🟢')
+    testStatusForField('password')
   })
 
   it('Should show valid passwordConfirmation state if validation succeeds', () => {
     populateInput('passwordConfirmation')
 
-    const passwordConfirmationStatus = screen.getByTestId('passwordConfirmation-status')
-    expect(passwordConfirmationStatus.title).toBe('Tudo certo!')
-    expect(passwordConfirmationStatus.textContent).toBe('🟢')
+    testStatusForField('passwordConfirmation')
   })
 
   it('Should enable submit button if form is valid', () => {
@@ -150,16 +128,13 @@ describe('Signup Page', () => {
     populateInput('password')
     populateInput('passwordConfirmation')
 
-    const submitButton = screen.getByTestId('submit') as HTMLButtonElement
-
-    expect(submitButton.disabled).toBe(false)
+    testButtonIsDisabled('submit', false)
   })
 
   it('Should show spinner on submit', () => {
     simulateValidSubmit()
 
-    const spinner = screen.queryByTestId('spinner')
-    expect(spinner).toBeTruthy()
+    testElementExists('spinner')
   })
 
   it('Should call AddAccount with correct input', () => {
@@ -196,11 +171,10 @@ describe('Signup Page', () => {
     addAccount.mockRejectedValueOnce(error)
 
     simulateValidSubmit()
-
     const errorWrap = await screen.findByTestId('error-wrap')
-    const mainError = screen.getByTestId('main-error')
+
     expect(errorWrap.childElementCount).toBe(1)
-    expect(mainError.textContent).toBe(error.message)
+    testElementText('main-error', error.message)
   })
 
   it('Should call SaveAccessToken on success', async () => {
