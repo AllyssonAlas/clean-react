@@ -1,4 +1,10 @@
-import { ValidationBuilder as Builder, Required, RequiredEmail, RequiredMinLength } from '@/presentation/validation'
+import {
+  ValidationBuilder as Builder,
+  Required,
+  RequiredEmail,
+  RequiredMinLength,
+  RequiredComparison,
+} from '@/presentation/validation'
 
 describe('ValidationBuilder', () => {
   it('Should add Required to validators array', () => {
@@ -17,6 +23,12 @@ describe('ValidationBuilder', () => {
     const sut = Builder.field('anyField').min(5).build()
 
     expect(sut).toEqual([new RequiredMinLength('anyField', 5)])
+  })
+
+  it('Should add RequiredComparison to validators array', () => {
+    const sut = Builder.field('anyField').sameAs('otherField').build()
+
+    expect(sut).toEqual([new RequiredComparison('anyField', 'otherField')])
   })
 
   it('Should add multiples validators to validators array', () => {
