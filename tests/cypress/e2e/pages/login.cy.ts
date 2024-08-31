@@ -20,4 +20,13 @@ describe('Login', () => {
     cy.getByTestId('submit').should('have.attr', 'disabled')
     cy.getByTestId('error-wrap').should('not.have.descendants')
   })
+
+  it('Should present valid state if form is valid', () => {
+    cy.getByTestId('email').type('valid_email@mail.com')
+    cy.getByTestId('email-status').should('have.attr', 'title', 'Tudo certo!').should('contain.text', '🟢')
+    cy.getByTestId('password').type('12345')
+    cy.getByTestId('password-status').should('have.attr', 'title', 'Tudo certo!').should('contain.text', '🟢')
+    cy.getByTestId('submit').should('not.have.attr', 'disabled')
+    cy.getByTestId('error-wrap').should('not.have.descendants')
+  })
 })
