@@ -51,4 +51,23 @@ describe('Login', () => {
       .should('contain.text', 'Credenciais inválidas')
     cy.url().should('eq', `${baseUrl}/login`)
   })
+
+  it('Should present save accessToken if valid credentials are provided', () => {
+    cy.intercept('POST', 'http://localhost:8000/api/login', {
+      statusCode: 200,
+      delay: 100,
+    })
+    cy.getByTestId('email').type('valid_email@mail.com')
+    cy.getByTestId('password').type('12345')
+    cy.getByTestId('submit').click()
+    cy.getByTestId('error-wrap')
+      .getByTestId('spinner')
+      .should('exist')
+      .getByTestId('main-error')
+      .should('not.exist')
+      .getByTestId('spinner')
+      .should('not.exist')
+    cy.url().should('eq', `${baseUrl}/`)
+    cy.window().then(({ localStorage }) => assert.isOk(localStorage.getItem('accessToken')))
+  })
 })
