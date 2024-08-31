@@ -16,5 +16,5 @@
     "resolveJsonModule": true
   },
   "include": ["src", "tests"],
-  "exclude": ["eslint.*"]
+  "exclude": ["eslint.*", "tests/cypress"]
 }
