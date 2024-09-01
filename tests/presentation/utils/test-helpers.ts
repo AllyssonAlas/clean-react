@@ -8,10 +8,13 @@ export const testButtonIsDisabled = (field: string, isDisabled: boolean): void =
   const button = screen.getByTestId(field) as HTMLButtonElement
   expect(button.disabled).toBe(isDisabled)
 }
-export const testStatusForField = (field: string, validationError?: string): void => {
-  const fieldStatus = screen.getByTestId(`${field}-status`)
-  expect(fieldStatus.title).toBe(validationError || 'Tudo certo!')
-  expect(fieldStatus.textContent).toBe(validationError ? '🔴' : '🟢')
+export const testStatusForField = (field: string, validationError: string = ''): void => {
+  const wrap = screen.getByTestId(`${field}-wrap`)
+  const input = screen.getByTestId(field)
+  const label = screen.getByTestId(`${field}-label`)
+  expect(wrap.getAttribute('data-status')).toBe(validationError ? 'invalid' : 'valid')
+  expect(input.title).toBe(validationError)
+  expect(label.title).toBe(validationError)
 }
 
 export const populateInput = (field: string): void => {
