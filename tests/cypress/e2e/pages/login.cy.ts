@@ -39,7 +39,7 @@ describe('Login', () => {
     })
     cy.getByTestId('email').type('valid_email@mail.com')
     cy.getByTestId('password').type('12345')
-    cy.getByTestId('submit').click()
+    cy.getByTestId('password').type('{enter}')
     cy.getByTestId('error-wrap')
       .getByTestId('spinner')
       .should('exist')
