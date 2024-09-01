@@ -112,4 +112,17 @@ describe('Login', () => {
     cy.url().should('eq', `${baseUrl}/`)
     cy.window().then(({ localStorage }) => assert.isOk(localStorage.getItem('accessToken') === 'any_token'))
   })
+
+  it('Should prevent multiple submits', () => {
+    cy.intercept('POST', 'http://localhost:8000/api/login', {
+      statusCode: 200,
+      delay: 100,
+    }).as('request')
+    cy.getByTestId('email').type('valid_email@mail.com')
+    cy.getByTestId('password').type('12345')
+    cy.getByTestId('form').submit()
+    cy.getByTestId('form').submit()
+    cy.get('@request.all').its('length').should('equal', 1)
+    cy.url().should('eq', `${baseUrl}/login`)
+  })
 })
