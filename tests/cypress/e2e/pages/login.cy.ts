@@ -52,6 +52,27 @@ describe('Login', () => {
     cy.url().should('eq', `${baseUrl}/login`)
   })
 
+  it('Should present UnexpectedError message if accessToken is falsy', () => {
+    cy.intercept('POST', 'http://localhost:8000/api/login', {
+      statusCode: 200,
+      delay: 100,
+      body: { accessToken: undefined },
+    })
+    cy.getByTestId('email').type('valid_email@mail.com')
+    cy.getByTestId('password').type('12345')
+    cy.getByTestId('submit').click()
+    cy.getByTestId('error-wrap')
+      .getByTestId('spinner')
+      .should('exist')
+      .getByTestId('main-error')
+      .should('not.exist')
+      .getByTestId('spinner')
+      .should('not.exist')
+      .getByTestId('main-error')
+      .should('contain.text', 'Algo de inesperado aconteceu')
+    cy.url().should('eq', `${baseUrl}/login`)
+  })
+
   it('Should save accessToken on 200', () => {
     cy.intercept('POST', 'http://localhost:8000/api/login', {
       statusCode: 200,
