@@ -1,5 +1,6 @@
 import { mock, MockProxy } from 'jest-mock-extended'
 
+import { UnexpectedError } from '@/domain/errors'
 import { SaveAccessToken, setupSaveAccessToken } from '@/domain/usecases'
 import { SetStorage } from '@/domain/contracts/gateways'
 
@@ -28,5 +29,11 @@ describe('SaveAccessToken', () => {
     const promise = sut({ token: 'any_token' })
 
     expect(promise).rejects.toThrow(new Error())
+  })
+
+  it('Should throw if token is falsy', async () => {
+    const promise = sut({ token: undefined })
+
+    expect(promise).rejects.toThrow(new UnexpectedError())
   })
 })
