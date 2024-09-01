@@ -125,4 +125,15 @@ describe('Login', () => {
     cy.get('@request.all').its('length').should('equal', 1)
     cy.url().should('eq', `${baseUrl}/login`)
   })
+
+  it('Should not call submit if form is invalid', () => {
+    cy.intercept('POST', 'http://localhost:8000/api/login', {
+      statusCode: 200,
+      delay: 100,
+    }).as('request')
+    cy.getByTestId('email').type('valid_email@mail.com')
+    cy.getByTestId('email').type('{enter}')
+    cy.get('@request.all').its('length').should('equal', 0)
+    cy.url().should('eq', `${baseUrl}/login`)
+  })
 })
