@@ -52,10 +52,11 @@ describe('Login', () => {
     cy.url().should('eq', `${baseUrl}/login`)
   })
 
-  it('Should present save accessToken if valid credentials are provided', () => {
+  it('Should save accessToken on 200', () => {
     cy.intercept('POST', 'http://localhost:8000/api/login', {
       statusCode: 200,
       delay: 100,
+      body: { accessToken: 'any_token' },
     })
     cy.getByTestId('email').type('valid_email@mail.com')
     cy.getByTestId('password').type('12345')
@@ -68,6 +69,6 @@ describe('Login', () => {
       .getByTestId('spinner')
       .should('not.exist')
     cy.url().should('eq', `${baseUrl}/`)
-    cy.window().then(({ localStorage }) => assert.isOk(localStorage.getItem('accessToken')))
+    cy.window().then(({ localStorage }) => assert.isOk(localStorage.getItem('accessToken') === 'any_token'))
   })
 })
