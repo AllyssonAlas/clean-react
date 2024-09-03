@@ -37,4 +37,16 @@ describe('Signup', () => {
     cy.getByTestId('submit').should('not.have.attr', 'disabled')
     cy.getByTestId('error-wrap').should('not.have.descendants')
   })
+
+  it('Should present EmailInUseError on 403', () => {
+    cy.mockRes({ statusCode: 403, url: /signup/ })
+    cy.submitForm([
+      { field: 'name', value: 'any_name' },
+      { field: 'email', value: 'valid_email@mail.com' },
+      { field: 'password', value: '12345' },
+      { field: 'passwordConfirmation', value: '12345' },
+    ])
+    cy.testErrorMessage('Email já está em uso')
+    cy.testUrl('signup')
+  })
 })
