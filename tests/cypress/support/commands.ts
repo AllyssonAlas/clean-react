@@ -1,6 +1,9 @@
 /// <reference types="cypress" />
 
 Cypress.Commands.add('getByTestId', (id) => cy.get(`[data-testid="${id}"]`))
+Cypress.Commands.add('mockRes', ({ body, statusCode, url }) => {
+  return cy.intercept(url, { statusCode, delay: 100, body })
+})
 Cypress.Commands.add('submitForm', (inputs) => {
   for (const { field, value } of inputs) {
     cy.getByTestId(field).type(value)

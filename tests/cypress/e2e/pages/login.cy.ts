@@ -1,3 +1,5 @@
+const apiUrl = /login/
+
 const validFormData = [
   { field: 'email', value: 'valid_email@mail.com' },
   { field: 'password', value: '12345' },
@@ -34,10 +36,7 @@ describe('Login', () => {
   })
 
   it('Should present UnexpectedError message on 400', () => {
-    cy.intercept('POST', 'http://localhost:8000/api/login', {
-      statusCode: 400,
-      delay: 100,
-    })
+    cy.mockRes({ statusCode: 400, url: apiUrl })
     cy.getByTestId('email').type('valid_email@mail.com')
     cy.getByTestId('password').type('12345')
     cy.getByTestId('password').type('{enter}')
@@ -46,32 +45,21 @@ describe('Login', () => {
   })
 
   it('Should present InvalidCredentialsError message on 401', () => {
-    cy.intercept('POST', 'http://localhost:8000/api/login', {
-      statusCode: 401,
-      delay: 100,
-    })
+    cy.mockRes({ statusCode: 401, url: apiUrl })
     cy.submitForm(validFormData)
     cy.testErrorMessage('Credenciais inválidas')
     cy.testUrl('login')
   })
 
   it('Should present UnexpectedError message if accessToken is falsy', () => {
-    cy.intercept('POST', 'http://localhost:8000/api/login', {
-      statusCode: 200,
-      delay: 100,
-      body: { accessToken: undefined },
-    })
+    cy.mockRes({ body: { accessToken: undefined }, statusCode: 200, url: apiUrl })
     cy.submitForm(validFormData)
     cy.testErrorMessage('Algo de inesperado aconteceu')
     cy.testUrl('login')
   })
 
   it('Should save accessToken on 200', () => {
-    cy.intercept('POST', 'http://localhost:8000/api/login', {
-      statusCode: 200,
-      delay: 100,
-      body: { accessToken: 'any_token' },
-    })
+    cy.mockRes({ body: { accessToken: 'any_token' }, statusCode: 200, url: apiUrl })
     cy.submitForm(validFormData)
     cy.getByTestId('error-wrap')
       .getByTestId('spinner')
@@ -85,10 +73,7 @@ describe('Login', () => {
   })
 
   it('Should prevent multiple submits', () => {
-    cy.intercept('POST', 'http://localhost:8000/api/login', {
-      statusCode: 200,
-      delay: 100,
-    }).as('request')
+    cy.mockRes({ statusCode: 200, url: apiUrl }).as('request')
     cy.submitForm(validFormData)
     cy.getByTestId('form').submit()
     cy.get('@request.all').its('length').should('equal', 1)
@@ -96,10 +81,7 @@ describe('Login', () => {
   })
 
   it('Should not call submit if form is invalid', () => {
-    cy.intercept('POST', 'http://localhost:8000/api/login', {
-      statusCode: 200,
-      delay: 100,
-    }).as('request')
+    cy.mockRes({ body: { accessToken: 'any_token' }, statusCode: 200, url: apiUrl }).as('request')
     cy.getByTestId('email').type('valid_email@mail.com')
     cy.getByTestId('email').type('{enter}')
     cy.get('@request.all').its('length').should('equal', 0)
