@@ -81,4 +81,12 @@ describe('Signup', () => {
     cy.testUrl('')
     cy.window().then(({ localStorage }) => assert.isOk(localStorage.getItem('accessToken') === 'any_token'))
   })
+
+  it('Should prevent multiple submits', () => {
+    cy.mockRes({ statusCode: 200, url: apiUrl }).as('request')
+    cy.submitForm(validFormData)
+    cy.getByTestId('form').submit()
+    cy.get('@request.all').its('length').should('equal', 1)
+    cy.testUrl('signup')
+  })
 })
