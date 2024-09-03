@@ -1,3 +1,12 @@
+const apiUrl = /signup/
+
+const validFormData = [
+  { field: 'name', value: 'any_name' },
+  { field: 'email', value: 'valid_email@mail.com' },
+  { field: 'password', value: '12345' },
+  { field: 'passwordConfirmation', value: '12345' },
+]
+
 describe('Signup', () => {
   beforeEach(() => {
     cy.visit('signup')
@@ -38,15 +47,24 @@ describe('Signup', () => {
     cy.getByTestId('error-wrap').should('not.have.descendants')
   })
 
+  it('Should present UnexpectedError message on 400', () => {
+    cy.mockRes({ statusCode: 400, url: apiUrl })
+    cy.submitForm(validFormData)
+    cy.testErrorMessage('Algo de inesperado aconteceu')
+    cy.testUrl('signup')
+  })
+
   it('Should present EmailInUseError on 403', () => {
-    cy.mockRes({ statusCode: 403, url: /signup/ })
-    cy.submitForm([
-      { field: 'name', value: 'any_name' },
-      { field: 'email', value: 'valid_email@mail.com' },
-      { field: 'password', value: '12345' },
-      { field: 'passwordConfirmation', value: '12345' },
-    ])
+    cy.mockRes({ statusCode: 403, url: apiUrl })
+    cy.submitForm(validFormData)
     cy.testErrorMessage('Email já está em uso')
+    cy.testUrl('signup')
+  })
+
+  it('Should present UnexpectedError message if invalid data is returned', () => {
+    cy.mockRes({ body: { invalid: undefined }, statusCode: 200, url: apiUrl })
+    cy.submitForm(validFormData)
+    cy.testErrorMessage('Algo de inesperado aconteceu')
     cy.testUrl('signup')
   })
 })
