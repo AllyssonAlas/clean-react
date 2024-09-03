@@ -67,4 +67,18 @@ describe('Signup', () => {
     cy.testErrorMessage('Algo de inesperado aconteceu')
     cy.testUrl('signup')
   })
+
+  it('Should save accessToken on 200', () => {
+    cy.mockRes({ body: { accessToken: 'any_token' }, statusCode: 200, url: apiUrl })
+    cy.submitForm(validFormData)
+    cy.getByTestId('error-wrap')
+      .getByTestId('spinner')
+      .should('exist')
+      .getByTestId('main-error')
+      .should('not.exist')
+      .getByTestId('spinner')
+      .should('not.exist')
+    cy.testUrl('')
+    cy.window().then(({ localStorage }) => assert.isOk(localStorage.getItem('accessToken') === 'any_token'))
+  })
 })
