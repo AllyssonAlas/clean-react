@@ -89,4 +89,13 @@ describe('Signup', () => {
     cy.get('@request.all').its('length').should('equal', 1)
     cy.testUrl('signup')
   })
+
+  it('Should not call submit if form is invalid', () => {
+    cy.mockRes({ body: { accessToken: 'any_token' }, statusCode: 200, url: apiUrl }).as('request')
+    cy.getByTestId('name').type('any_name')
+    cy.getByTestId('email').type('valid_email@mail.com')
+    cy.getByTestId('email').type('{enter}')
+    cy.get('@request.all').its('length').should('equal', 0)
+    cy.testUrl('signup')
+  })
 })
