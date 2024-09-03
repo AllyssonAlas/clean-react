@@ -24,4 +24,17 @@ describe('Signup', () => {
     cy.getByTestId('submit').should('have.attr', 'disabled')
     cy.getByTestId('error-wrap').should('not.have.descendants')
   })
+
+  it('Should present valid state if form is valid', () => {
+    cy.getByTestId('name').type('any_name')
+    cy.testInputState('name')
+    cy.getByTestId('email').type('valid_email@mail.com')
+    cy.testInputState('email')
+    cy.getByTestId('password').type('12345')
+    cy.testInputState('password')
+    cy.getByTestId('passwordConfirmation').type('12345')
+    cy.testInputState('passwordConfirmation')
+    cy.getByTestId('submit').should('not.have.attr', 'disabled')
+    cy.getByTestId('error-wrap').should('not.have.descendants')
+  })
 })
