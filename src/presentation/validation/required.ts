@@ -49,7 +49,7 @@ export class RequiredComparison {
 
   validate(input: object): string | undefined {
     if (input[this.field] !== input[this.fieldToCompare]) {
-      return new RequiredComparisonError(this.field).message
+      return new RequiredComparisonError(this.fieldToCompare).message
     }
   }
 }

@@ -108,7 +108,7 @@ describe('RequiredComparison', () => {
       field: 'any_value',
     })
 
-    expect(error).toEqual(new RequiredComparisonError('field').message)
+    expect(error).toEqual(new RequiredComparisonError('anotherField').message)
   })
 
   it('Should return undefined comparison is valid', () => {
