@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios'
 
-import { HttpPostClient } from '@/domain/contracts/gateways'
+import { HttpPostClient, HttpGetClient } from '@/domain/contracts/gateways'
 
 export class AxiosHttpClient implements HttpPostClient {
   async post({ url, params }: HttpPostClient.Input): Promise<HttpPostClient.Output> {
@@ -18,5 +18,9 @@ export class AxiosHttpClient implements HttpPostClient {
       body: response.data,
       statusCode: response.status,
     }
+  }
+
+  async get({ url }: HttpGetClient.Input): Promise<void> {
+    await axios.get(url)
   }
 }
