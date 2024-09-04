@@ -47,10 +47,7 @@ describe('AxiosHttpClient', () => {
 
       const output = await sut.post(input)
 
-      expect(output).toEqual({
-        body: 'any_data',
-        statusCode: 400,
-      })
+      expect(output).toEqual({ body: 'any_data', statusCode: 400 })
     })
 
     it('Should rethrow error if axios throw', async () => {
@@ -63,11 +60,21 @@ describe('AxiosHttpClient', () => {
   })
 
   describe('get', () => {
+    beforeAll(() => {
+      fakeAxios.get.mockResolvedValue({ data: 'any_data', status: 200 })
+    })
+
     it('Should call get with correct input', async () => {
       await sut.get(input)
 
       expect(fakeAxios.get).toHaveBeenCalledWith('any_url')
       expect(fakeAxios.get).toHaveBeenCalledTimes(1)
+    })
+
+    it('Should return correct output on success', async () => {
+      const output = await sut.get(input)
+
+      expect(output).toEqual({ body: 'any_data', statusCode: 200 })
     })
   })
 })
