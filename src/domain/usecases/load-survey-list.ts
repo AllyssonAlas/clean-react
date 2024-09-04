@@ -11,6 +11,7 @@ export const setupLoadSurveyList: Setup = (url, httpGetClient) => {
     const { statusCode, body } = await httpGetClient.get({ url })
     switch (statusCode) {
       case HttpStatusCode.ok:
+      case HttpStatusCode.noContent:
         return body
       default:
         throw new UnexpectedError()
