@@ -76,5 +76,13 @@ describe('AxiosHttpClient', () => {
 
       expect(output).toEqual({ body: 'any_data', statusCode: 200 })
     })
+
+    it('Should return correct output on http error', async () => {
+      fakeAxios.get.mockRejectedValueOnce({ response: { data: 'any_data', status: 400 } })
+
+      const output = await sut.get(input)
+
+      expect(output).toEqual({ body: 'any_data', statusCode: 400 })
+    })
   })
 })
