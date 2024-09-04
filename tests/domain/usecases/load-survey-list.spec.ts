@@ -48,4 +48,14 @@ describe('LoadSurveyList', () => {
 
     await expect(promise).rejects.toThrow(new UnexpectedError())
   })
+
+  it('Should throw UnexpectedError if HttpPostClient returns 500', async () => {
+    httpGetClient.get.mockResolvedValueOnce({
+      statusCode: HttpStatusCode.serverError,
+    })
+
+    const promise = sut()
+
+    await expect(promise).rejects.toThrow(new UnexpectedError())
+  })
 })
