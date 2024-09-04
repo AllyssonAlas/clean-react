@@ -5,6 +5,8 @@ import { setupLoadSurveyList, LoadSurveyList } from '@/domain/usecases'
 import { HttpGetClient, HttpStatusCode } from '@/domain/contracts/gateways'
 import { UnexpectedError } from '@/domain/errors'
 
+import { mockLoadSurveyListOutput } from '@/tests/domain/mocks'
+
 describe('LoadSurveyList', () => {
   let url: string
   let httpGetClient: MockProxy<HttpGetClient<SurveyModel[]>>
@@ -15,6 +17,7 @@ describe('LoadSurveyList', () => {
     httpGetClient = mock()
     httpGetClient.get.mockResolvedValue({
       statusCode: 200,
+      body: mockLoadSurveyListOutput(),
     })
   })
 
@@ -57,5 +60,11 @@ describe('LoadSurveyList', () => {
     const promise = sut()
 
     await expect(promise).rejects.toThrow(new UnexpectedError())
+  })
+
+  it('Should return a SurveyModel list if HttpPostClient returns 200', async () => {
+    const result = await sut()
+
+    expect(result).toEqual(mockLoadSurveyListOutput())
   })
 })
