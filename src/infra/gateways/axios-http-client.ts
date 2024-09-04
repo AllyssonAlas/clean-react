@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from 'axios'
 
 import { HttpPostClient, HttpGetClient } from '@/domain/contracts/gateways'
 
-export class AxiosHttpClient implements HttpPostClient {
+export class AxiosHttpClient implements HttpPostClient, HttpGetClient {
   async post({ url, params }: HttpPostClient.Input): Promise<HttpPostClient.Output> {
     let response: AxiosResponse
     try {
@@ -21,14 +21,19 @@ export class AxiosHttpClient implements HttpPostClient {
   }
 
   async get({ url }: HttpGetClient.Input): Promise<HttpGetClient.Output> {
+    let response: AxiosResponse
     try {
-      const { data, status } = await axios.get(url)
-      return { body: data, statusCode: status }
+      response = await axios.get(url)
     } catch (error) {
-      return {
-        body: error.response.data,
-        statusCode: error.response.status,
+      if (error.response) {
+        response = error.response
+      } else {
+        throw error
       }
+    }
+    return {
+      body: response.data,
+      statusCode: response.status,
     }
   }
 }
