@@ -42,7 +42,7 @@ describe('AddAccount', () => {
     expect(promise).rejects.toThrow(new EmailInUseError())
   })
 
-  it('Should throw if HttpPostClient returns 400', async () => {
+  it('Should throw UnexpectedError if HttpPostClient returns 400', async () => {
     httpPostClient.post.mockResolvedValueOnce({
       statusCode: HttpStatusCode.badRequest,
     })
@@ -52,7 +52,7 @@ describe('AddAccount', () => {
     await expect(promise).rejects.toThrow(new UnexpectedError())
   })
 
-  it('Should throw if HttpPostClient returns 404', async () => {
+  it('Should throw UnexpectedError if HttpPostClient returns 404', async () => {
     httpPostClient.post.mockResolvedValueOnce({
       statusCode: HttpStatusCode.notFound,
     })
@@ -62,7 +62,7 @@ describe('AddAccount', () => {
     await expect(promise).rejects.toThrow(new UnexpectedError())
   })
 
-  it('Should throw if HttpPostClient returns 500', async () => {
+  it('Should throw UnexpectedError if HttpPostClient returns 500', async () => {
     httpPostClient.post.mockResolvedValueOnce({
       statusCode: HttpStatusCode.serverError,
     })

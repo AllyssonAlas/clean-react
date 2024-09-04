@@ -35,7 +35,7 @@ describe('Authentication', () => {
     })
   })
 
-  it('Should throw if HttpPostClient returns 401', async () => {
+  it('Should throw InvalidCredentialsError if HttpPostClient returns 401', async () => {
     httpPostClient.post.mockResolvedValueOnce({
       statusCode: HttpStatusCode.unauthorized,
     })
@@ -45,7 +45,7 @@ describe('Authentication', () => {
     await expect(promise).rejects.toThrow(new InvalidCredentialsError())
   })
 
-  it('Should throw if HttpPostClient returns 400', async () => {
+  it('Should throw UnexpectedError if HttpPostClient returns 400', async () => {
     httpPostClient.post.mockResolvedValueOnce({
       statusCode: HttpStatusCode.badRequest,
     })
@@ -55,7 +55,7 @@ describe('Authentication', () => {
     await expect(promise).rejects.toThrow(new UnexpectedError())
   })
 
-  it('Should throw if HttpPostClient returns 404', async () => {
+  it('Should throw UnexpectedError if HttpPostClient returns 404', async () => {
     httpPostClient.post.mockResolvedValueOnce({
       statusCode: HttpStatusCode.notFound,
     })
@@ -65,7 +65,7 @@ describe('Authentication', () => {
     await expect(promise).rejects.toThrow(new UnexpectedError())
   })
 
-  it('Should throw if HttpPostClient returns 500', async () => {
+  it('Should throw UnexpectedError if HttpPostClient returns 500', async () => {
     httpPostClient.post.mockResolvedValueOnce({
       statusCode: HttpStatusCode.serverError,
     })
