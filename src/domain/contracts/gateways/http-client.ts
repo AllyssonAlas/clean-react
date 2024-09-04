@@ -7,18 +7,18 @@ export enum HttpStatusCode {
   serverError = 500,
 }
 
-export interface HttpPostClient<T = any, R = any> {
-  post: (input: HttpPostClient.Input<T>) => Promise<HttpPostClient.Output<R>>
+export interface HttpPostClient<ReqType = any, ResType = any> {
+  post: (input: HttpPostClient.Input<ReqType>) => Promise<HttpPostClient.Output<ResType>>
 }
 
 export namespace HttpPostClient {
-  export type Input<T = any> = {
+  export type Input<ParamsType = any> = {
     url: string
-    params?: T
+    params?: ParamsType
   }
 
-  export type Output<R = any> = {
+  export type Output<Response = any> = {
     statusCode: HttpStatusCode
-    body?: R
+    body?: Response
   }
 }
