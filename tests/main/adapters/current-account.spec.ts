@@ -1,3 +1,4 @@
+import { UnexpectedError } from '@/domain/errors'
 import { LocalStorageAdapter } from '@/infra/gateways'
 import { setCurrentAccountAdapter } from '@/main/adapters'
 
@@ -11,5 +12,11 @@ describe('CurrentAccountAdapter', () => {
     setCurrentAccountAdapter(account)
 
     expect(setSpy).toHaveBeenCalledWith({ key: 'account', value: account })
+  })
+
+  it('Should throw UnexpectedError', () => {
+    expect(() => {
+      setCurrentAccountAdapter(undefined)
+    }).toThrow(new UnexpectedError())
   })
 })
