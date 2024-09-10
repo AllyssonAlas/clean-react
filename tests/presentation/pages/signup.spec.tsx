@@ -28,12 +28,12 @@ const simulateValidSubmit = async (): Promise<void> => {
 
 describe('Signup Page', () => {
   let validation: MockProxy<Validation>
-  let saveAccessToken: jest.Mock
+  let updateCurrentAccount: jest.Mock
   let addAccount: jest.Mock
 
   beforeAll(() => {
     validation = mock<Validation>()
-    saveAccessToken = jest.fn().mockResolvedValue(undefined)
+    updateCurrentAccount = jest.fn().mockResolvedValue(undefined)
     addAccount = jest.fn().mockResolvedValue({ accessToken: 'any_access_token' })
   })
 
@@ -41,7 +41,7 @@ describe('Signup Page', () => {
     validation.validate.mockReturnValue(undefined)
     render(
       <Router location={history.location} navigator={history}>
-        <SignUp addAccount={addAccount} saveAccessToken={saveAccessToken} validation={validation} />
+        <SignUp addAccount={addAccount} updateCurrentAccount={updateCurrentAccount} validation={validation} />
       </Router>,
     )
   })
@@ -54,7 +54,7 @@ describe('Signup Page', () => {
 
     render(
       <Router location={history.location} navigator={history}>
-        <SignUp addAccount={addAccount} saveAccessToken={saveAccessToken} validation={validation} />
+        <SignUp addAccount={addAccount} updateCurrentAccount={updateCurrentAccount} validation={validation} />
       </Router>,
     )
 
@@ -177,18 +177,18 @@ describe('Signup Page', () => {
     testElementText('main-error', error.message)
   })
 
-  it('Should call SaveAccessToken on success', async () => {
+  it('Should call UpdateCurrentAccount on success', async () => {
     await simulateValidSubmit()
 
-    expect(saveAccessToken).toHaveBeenCalledWith({ token: 'any_access_token' })
-    expect(saveAccessToken).toHaveBeenCalledTimes(1)
+    expect(updateCurrentAccount).toHaveBeenCalledWith({ accessToken: 'any_access_token' })
+    expect(updateCurrentAccount).toHaveBeenCalledTimes(1)
     expect(history.location.pathname).toBe('/')
     expect(history.index).toBe(0)
   })
 
-  it('Should present error if SaveAccessToken fails', async () => {
+  it('Should present error if UpdateCurrentAccount fails', async () => {
     const error = new EmailInUseError()
-    saveAccessToken.mockRejectedValueOnce(error)
+    updateCurrentAccount.mockRejectedValueOnce(error)
 
     simulateValidSubmit()
 

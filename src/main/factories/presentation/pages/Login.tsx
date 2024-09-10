@@ -1,12 +1,12 @@
 import { Login } from '@/presentation/pages'
-import { makeAuthentication, makeSaveAccessToken } from '@/main/factories/domain/usecases'
+import { makeAuthentication, makeUpdateCurrentAccount } from '@/main/factories/domain/usecases'
 import { makeLoginValidation } from '@/main/factories/presentation/validation'
 
 export const MakeLogin: React.FC = () => {
   return (
     <Login
       authentication={makeAuthentication()}
-      saveAccessToken={makeSaveAccessToken()}
+      updateCurrentAccount={makeUpdateCurrentAccount()}
       validation={makeLoginValidation()}
     />
   )

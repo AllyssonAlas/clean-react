@@ -26,12 +26,12 @@ const simulateValidSubmit = async (): Promise<void> => {
 
 describe('Login Page', () => {
   let validation: MockProxy<Validation>
-  let saveAccessToken: jest.Mock
+  let updateCurrentAccount: jest.Mock
   let authentication: jest.Mock
 
   beforeAll(() => {
     validation = mock<Validation>()
-    saveAccessToken = jest.fn().mockResolvedValue(undefined)
+    updateCurrentAccount = jest.fn().mockResolvedValue(undefined)
     authentication = jest.fn().mockResolvedValue({ accessToken: 'any_access_token' })
   })
 
@@ -39,7 +39,7 @@ describe('Login Page', () => {
     validation.validate.mockReturnValue(undefined)
     render(
       <Router location={history.location} navigator={history}>
-        <Login authentication={authentication} saveAccessToken={saveAccessToken} validation={validation} />
+        <Login authentication={authentication} updateCurrentAccount={updateCurrentAccount} validation={validation} />
       </Router>,
     )
   })
@@ -52,7 +52,7 @@ describe('Login Page', () => {
 
     render(
       <Router location={history.location} navigator={history}>
-        <Login authentication={authentication} saveAccessToken={saveAccessToken} validation={validation} />
+        <Login authentication={authentication} updateCurrentAccount={updateCurrentAccount} validation={validation} />
       </Router>,
     )
 
@@ -141,16 +141,16 @@ describe('Login Page', () => {
     testElementText('main-error', error.message)
   })
 
-  it('Should call SaveAccessToken on success', async () => {
+  it('Should call UpdateCurrentAccount on success', async () => {
     await simulateValidSubmit()
 
-    expect(saveAccessToken).toHaveBeenCalledWith({ token: 'any_access_token' })
-    expect(saveAccessToken).toHaveBeenCalledTimes(1)
+    expect(updateCurrentAccount).toHaveBeenCalledWith({ accessToken: 'any_access_token' })
+    expect(updateCurrentAccount).toHaveBeenCalledTimes(1)
   })
 
-  it('Should present error if SaveAccessToken fails', async () => {
+  it('Should present error if UpdateCurrentAccount fails', async () => {
     const error = new InvalidCredentialsError()
-    saveAccessToken.mockRejectedValueOnce(error)
+    updateCurrentAccount.mockRejectedValueOnce(error)
 
     simulateValidSubmit()
     const mainError = await screen.findByTestId('main-error')
