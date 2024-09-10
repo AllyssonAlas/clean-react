@@ -59,7 +59,7 @@ describe('Login', () => {
   })
 
   it('Should save accessToken on 200', () => {
-    cy.mockRes({ body: { accessToken: 'any_token' }, statusCode: 200, url: apiUrl })
+    cy.mockRes({ body: { accessToken: 'any_token', name: 'any_name' }, statusCode: 200, url: apiUrl })
     cy.submitForm(validFormData)
     cy.getByTestId('error-wrap')
       .getByTestId('spinner')
@@ -69,7 +69,9 @@ describe('Login', () => {
       .getByTestId('spinner')
       .should('not.exist')
     cy.testUrl('')
-    cy.window().then(({ localStorage }) => assert.isOk(localStorage.getItem('accessToken') === 'any_token'))
+    cy.window().then(({ localStorage }) =>
+      assert.isOk(localStorage.getItem('account') === JSON.stringify({ accessToken: 'any_token', name: 'any_name' })),
+    )
   })
 
   it('Should prevent multiple submits', () => {

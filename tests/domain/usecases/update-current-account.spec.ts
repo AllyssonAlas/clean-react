@@ -17,22 +17,25 @@ describe('UpdateCurrentAccount', () => {
   })
 
   it('Should call SetStorage with correct input', async () => {
-    await sut({ accessToken: 'any_token' })
+    await sut({ accessToken: 'any_token', name: 'any_name' })
 
-    expect(setStorage.set).toHaveBeenCalledWith({ key: 'accessToken', value: 'any_token' })
+    expect(setStorage.set).toHaveBeenCalledWith({
+      key: 'account',
+      value: { accessToken: 'any_token', name: 'any_name' },
+    })
     expect(setStorage.set).toHaveBeenCalledTimes(1)
   })
 
   it('Should rethrow if SetStorage throws', async () => {
     setStorage.set.mockRejectedValueOnce(new Error())
 
-    const promise = sut({ accessToken: 'any_token' })
+    const promise = sut({ accessToken: 'any_token', name: 'any_name' })
 
     expect(promise).rejects.toThrow(new Error())
   })
 
   it('Should throw if token is falsy', async () => {
-    const promise = sut({ accessToken: undefined })
+    const promise = sut(undefined)
 
     expect(promise).rejects.toThrow(new UnexpectedError())
   })

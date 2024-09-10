@@ -32,7 +32,7 @@ describe('Login Page', () => {
   beforeAll(() => {
     validation = mock<Validation>()
     updateCurrentAccount = jest.fn().mockResolvedValue(undefined)
-    authentication = jest.fn().mockResolvedValue({ accessToken: 'any_access_token' })
+    authentication = jest.fn().mockResolvedValue({ accessToken: 'any_access_token', name: 'any_name' })
   })
 
   beforeEach(() => {
@@ -144,7 +144,7 @@ describe('Login Page', () => {
   it('Should call UpdateCurrentAccount on success', async () => {
     await simulateValidSubmit()
 
-    expect(updateCurrentAccount).toHaveBeenCalledWith({ accessToken: 'any_access_token' })
+    expect(updateCurrentAccount).toHaveBeenCalledWith({ accessToken: 'any_access_token', name: 'any_name' })
     expect(updateCurrentAccount).toHaveBeenCalledTimes(1)
   })
 
