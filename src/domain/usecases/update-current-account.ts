@@ -4,11 +4,11 @@ import { UnexpectedError } from '@/domain/errors'
 
 type Input = AccountModel
 export type UpdateCurrentAccount = (input: Input) => Promise<void>
-type Setup = (storage: SetStorage<string>) => UpdateCurrentAccount
+type Setup = (storage: SetStorage<AccountModel>) => UpdateCurrentAccount
 
 export const setupUpdateCurrentAccount: Setup = (storage) => {
-  return async ({ accessToken }) => {
-    if (!accessToken) throw new UnexpectedError()
-    await storage.set({ key: 'accessToken', value: accessToken })
+  return async (account) => {
+    if (!account?.accessToken) throw new UnexpectedError()
+    await storage.set({ key: 'account', value: account })
   }
 }
