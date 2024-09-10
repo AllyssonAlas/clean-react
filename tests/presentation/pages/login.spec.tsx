@@ -3,6 +3,7 @@ import { render, fireEvent, cleanup, screen } from '@testing-library/react'
 import { mock, MockProxy } from 'jest-mock-extended'
 import { createMemoryHistory } from 'history'
 
+import { AccountContext } from '@/presentation/contexts'
 import { Login } from '@/presentation/pages'
 import { Validation } from '@/presentation/protocols'
 import { InvalidCredentialsError } from '@/domain/errors'
@@ -25,22 +26,24 @@ const simulateValidSubmit = async (): Promise<void> => {
 }
 
 describe('Login Page', () => {
+  let setCurrentAccount: jest.Mock
   let validation: MockProxy<Validation>
-  let updateCurrentAccount: jest.Mock
   let authentication: jest.Mock
 
   beforeAll(() => {
+    setCurrentAccount = jest.fn().mockResolvedValue(undefined)
     validation = mock<Validation>()
-    updateCurrentAccount = jest.fn().mockResolvedValue(undefined)
     authentication = jest.fn().mockResolvedValue({ accessToken: 'any_access_token', name: 'any_name' })
   })
 
   beforeEach(() => {
     validation.validate.mockReturnValue(undefined)
     render(
-      <Router location={history.location} navigator={history}>
-        <Login authentication={authentication} updateCurrentAccount={updateCurrentAccount} validation={validation} />
-      </Router>,
+      <AccountContext.Provider value={{ setCurrentAccount }}>
+        <Router location={history.location} navigator={history}>
+          <Login authentication={authentication} validation={validation} />
+        </Router>
+      </AccountContext.Provider>,
     )
   })
 
@@ -51,9 +54,11 @@ describe('Login Page', () => {
     cleanup()
 
     render(
-      <Router location={history.location} navigator={history}>
-        <Login authentication={authentication} updateCurrentAccount={updateCurrentAccount} validation={validation} />
-      </Router>,
+      <AccountContext.Provider value={{ setCurrentAccount }}>
+        <Router location={history.location} navigator={history}>
+          <Login authentication={authentication} validation={validation} />
+        </Router>
+      </AccountContext.Provider>,
     )
 
     testChildCount('error-wrap', 0)
@@ -144,19 +149,8 @@ describe('Login Page', () => {
   it('Should call UpdateCurrentAccount on success', async () => {
     await simulateValidSubmit()
 
-    expect(updateCurrentAccount).toHaveBeenCalledWith({ accessToken: 'any_access_token', name: 'any_name' })
-    expect(updateCurrentAccount).toHaveBeenCalledTimes(1)
-  })
-
-  it('Should present error if UpdateCurrentAccount fails', async () => {
-    const error = new InvalidCredentialsError()
-    updateCurrentAccount.mockRejectedValueOnce(error)
-
-    simulateValidSubmit()
-    const mainError = await screen.findByTestId('main-error')
-
-    testChildCount('error-wrap', 1)
-    expect(mainError.textContent).toBe(error.message)
+    expect(setCurrentAccount).toHaveBeenCalledWith({ accessToken: 'any_access_token', name: 'any_name' })
+    expect(setCurrentAccount).toHaveBeenCalledTimes(1)
   })
 
   it('Should got to Signup page', async () => {

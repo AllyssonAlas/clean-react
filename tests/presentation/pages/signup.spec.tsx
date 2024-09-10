@@ -4,6 +4,7 @@ import { mock, MockProxy } from 'jest-mock-extended'
 import { createMemoryHistory } from 'history'
 
 import { EmailInUseError } from '@/domain/errors'
+import { AccountContext } from '@/presentation/contexts'
 import { SignUp } from '@/presentation/pages'
 import { Validation } from '@/presentation/protocols'
 
@@ -27,22 +28,24 @@ const simulateValidSubmit = async (): Promise<void> => {
 }
 
 describe('Signup Page', () => {
+  let setCurrentAccount: jest.Mock
   let validation: MockProxy<Validation>
-  let updateCurrentAccount: jest.Mock
   let addAccount: jest.Mock
 
   beforeAll(() => {
+    setCurrentAccount = jest.fn().mockResolvedValue(undefined)
     validation = mock<Validation>()
-    updateCurrentAccount = jest.fn().mockResolvedValue(undefined)
     addAccount = jest.fn().mockResolvedValue({ accessToken: 'any_access_token', name: 'any_name' })
   })
 
   beforeEach(() => {
     validation.validate.mockReturnValue(undefined)
     render(
-      <Router location={history.location} navigator={history}>
-        <SignUp addAccount={addAccount} updateCurrentAccount={updateCurrentAccount} validation={validation} />
-      </Router>,
+      <AccountContext.Provider value={{ setCurrentAccount }}>
+        <Router location={history.location} navigator={history}>
+          <SignUp addAccount={addAccount} validation={validation} />
+        </Router>
+      </AccountContext.Provider>,
     )
   })
 
@@ -53,9 +56,11 @@ describe('Signup Page', () => {
     cleanup()
 
     render(
-      <Router location={history.location} navigator={history}>
-        <SignUp addAccount={addAccount} updateCurrentAccount={updateCurrentAccount} validation={validation} />
-      </Router>,
+      <AccountContext.Provider value={{ setCurrentAccount }}>
+        <Router location={history.location} navigator={history}>
+          <SignUp addAccount={addAccount} validation={validation} />
+        </Router>
+      </AccountContext.Provider>,
     )
 
     testChildCount('error-wrap', 0)
@@ -180,22 +185,10 @@ describe('Signup Page', () => {
   it('Should call UpdateCurrentAccount on success', async () => {
     await simulateValidSubmit()
 
-    expect(updateCurrentAccount).toHaveBeenCalledWith({ accessToken: 'any_access_token', name: 'any_name' })
-    expect(updateCurrentAccount).toHaveBeenCalledTimes(1)
+    expect(setCurrentAccount).toHaveBeenCalledWith({ accessToken: 'any_access_token', name: 'any_name' })
+    expect(setCurrentAccount).toHaveBeenCalledTimes(1)
     expect(history.location.pathname).toBe('/')
     expect(history.index).toBe(0)
-  })
-
-  it('Should present error if UpdateCurrentAccount fails', async () => {
-    const error = new EmailInUseError()
-    updateCurrentAccount.mockRejectedValueOnce(error)
-
-    simulateValidSubmit()
-
-    const errorWrap = await screen.findByTestId('error-wrap')
-    const mainError = await screen.findByTestId('main-error')
-    expect(errorWrap.childElementCount).toBe(1)
-    expect(mainError.textContent).toBe(error.message)
   })
 
   it('Should got to Login page', async () => {
