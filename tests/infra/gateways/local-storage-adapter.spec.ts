@@ -23,8 +23,8 @@ describe('LocalStorageAdapter', () => {
     sut = new LocalStorageAdapter()
   })
 
-  it('Should call localStorage with correct input', async () => {
-    await sut.set(input)
+  it('Should call localStorage with correct input', () => {
+    sut.set(input)
 
     expect(fakeLocalStorage.setItem).toHaveBeenCalledWith(
       'any_key',

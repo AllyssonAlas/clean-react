@@ -17,7 +17,7 @@ describe('UpdateCurrentAccount', () => {
   })
 
   it('Should call SetStorage with correct input', async () => {
-    await sut({ accessToken: 'any_token', name: 'any_name' })
+    sut({ accessToken: 'any_token', name: 'any_name' })
 
     expect(setStorage.set).toHaveBeenCalledWith({
       key: 'account',
@@ -27,7 +27,9 @@ describe('UpdateCurrentAccount', () => {
   })
 
   it('Should rethrow if SetStorage throws', async () => {
-    setStorage.set.mockRejectedValueOnce(new Error())
+    setStorage.set.mockImplementationOnce(() => {
+      throw new Error()
+    })
 
     const promise = sut({ accessToken: 'any_token', name: 'any_name' })
 

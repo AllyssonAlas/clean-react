@@ -9,6 +9,6 @@ type Setup = (storage: SetStorage<AccountModel>) => UpdateCurrentAccount
 export const setupUpdateCurrentAccount: Setup = (storage) => {
   return async (account) => {
     if (!account?.accessToken) throw new UnexpectedError()
-    await storage.set({ key: 'account', value: account })
+    storage.set({ key: 'account', value: account })
   }
 }

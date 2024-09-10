@@ -1,5 +1,5 @@
 export interface SetStorage<T = any> {
-  set: (input: SetStorage.Input<T>) => Promise<void>
+  set: (input: SetStorage.Input<T>) => void
 }
 
 export namespace SetStorage {
