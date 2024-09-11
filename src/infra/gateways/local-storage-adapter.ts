@@ -1,11 +1,11 @@
-import { GetStorage, SetStorage } from '@/domain/contracts/gateways'
+import { SetStorage, GetStorage } from '@/domain/contracts/gateways'
 
-export class LocalStorageAdapter implements SetStorage {
+export class LocalStorageAdapter implements SetStorage, GetStorage {
   set({ key, value }: SetStorage.Input): void {
     localStorage.setItem(key, JSON.stringify(value))
   }
 
-  get({ key }: GetStorage.Input): void {
-    localStorage.getItem(key)
+  get({ key }: GetStorage.Input): GetStorage.Output {
+    return JSON.parse(localStorage.getItem(key))
   }
 }
