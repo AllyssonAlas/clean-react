@@ -31,5 +31,16 @@ describe('CurrentAccountAdapter', () => {
       expect(getSpy).toHaveBeenCalledWith({ key: 'account' })
       expect(getSpy).toHaveBeenCalledTimes(1)
     })
+
+    it('Should return same output as LocalStorageAdapter.get', () => {
+      const account = { accessToken: 'any_access_token', name: 'any_name' }
+      jest
+        .spyOn(LocalStorageAdapter.prototype, 'get')
+        .mockReturnValue({ accessToken: 'any_access_token', name: 'any_name' })
+
+      const result = getCurrentAccountAdapter()
+
+      expect(result).toEqual(account)
+    })
   })
 })
