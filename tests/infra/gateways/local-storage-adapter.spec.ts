@@ -51,5 +51,14 @@ describe('LocalStorageAdapter', () => {
       expect(fakeLocalStorage.getItem).toHaveBeenCalledWith('any_key')
       expect(fakeLocalStorage.getItem).toHaveBeenCalledTimes(1)
     })
+
+    it('Should return same output as localStorage.getItem', () => {
+      const data = { data: 'any_data' }
+      localStorage.setItem('any_key', JSON.stringify(data))
+
+      const result = sut.get(input)
+
+      expect(result).toEqual(data)
+    })
   })
 })
