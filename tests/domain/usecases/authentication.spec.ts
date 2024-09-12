@@ -4,7 +4,7 @@ import { Authentication, setupAuthentication } from '@/domain/usecases'
 import { HttpPostClient, HttpStatusCode } from '@/domain/contracts/gateways'
 import { InvalidCredentialsError, UnexpectedError } from '@/domain/errors'
 
-import { mockAuthenticationInput } from '@/tests/domain/mocks'
+import { mockAuthenticationInput, mockAccountModel } from '@/tests/domain/mocks'
 
 describe('Authentication', () => {
   let url: string
@@ -16,9 +16,7 @@ describe('Authentication', () => {
     httpPostClient = mock()
     httpPostClient.post.mockResolvedValue({
       statusCode: HttpStatusCode.ok,
-      body: {
-        accessToken: 'any_access_token',
-      },
+      body: mockAccountModel(),
     })
   })
 
@@ -78,6 +76,6 @@ describe('Authentication', () => {
   it('Should return an AccountModel if HttpPostClient return 200', async () => {
     const account = await sut(mockAuthenticationInput())
 
-    expect(account).toEqual({ accessToken: 'any_access_token' })
+    expect(account).toEqual(mockAccountModel())
   })
 })

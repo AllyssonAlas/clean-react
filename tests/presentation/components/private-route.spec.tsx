@@ -5,6 +5,8 @@ import { createMemoryHistory, MemoryHistory } from 'history'
 import { AccountContext } from '@/presentation/contexts'
 import { PrivateRoute } from '@/presentation/components'
 
+import { mockAccountModel } from '@/tests/domain/mocks'
+
 describe('PrivateRoute Component', () => {
   let history: MemoryHistory
 
@@ -27,7 +29,7 @@ describe('PrivateRoute Component', () => {
   })
 
   it('Should render current component if token is not empty', () => {
-    const getCurrentAccount = () => ({ accessToken: 'any_access_token', name: 'any_name' })
+    const getCurrentAccount = () => mockAccountModel()
 
     render(
       <AccountContext.Provider value={{ getCurrentAccount }}>

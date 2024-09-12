@@ -4,7 +4,7 @@ import { AddAccount, setupAddAccount } from '@/domain/usecases'
 import { HttpPostClient, HttpStatusCode } from '@/domain/contracts/gateways'
 import { EmailInUseError, UnexpectedError } from '@/domain/errors'
 
-import { mockAddAccountInput } from '@/tests/domain/mocks'
+import { mockAddAccountInput, mockAccountModel } from '@/tests/domain/mocks'
 
 describe('AddAccount', () => {
   let url: string
@@ -16,9 +16,7 @@ describe('AddAccount', () => {
     httpPostClient = mock()
     httpPostClient.post.mockResolvedValue({
       statusCode: HttpStatusCode.ok,
-      body: {
-        accessToken: 'any_access_token',
-      },
+      body: mockAccountModel(),
     })
   })
 
@@ -75,6 +73,6 @@ describe('AddAccount', () => {
   it('Should return an AccountModel if HttpPostClient return 200', async () => {
     const account = await sut(mockAddAccountInput())
 
-    expect(account).toEqual({ accessToken: 'any_access_token' })
+    expect(account).toEqual(mockAccountModel())
   })
 })

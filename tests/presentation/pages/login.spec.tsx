@@ -3,11 +3,12 @@ import { render, fireEvent, cleanup, screen } from '@testing-library/react'
 import { mock, MockProxy } from 'jest-mock-extended'
 import { createMemoryHistory } from 'history'
 
+import { InvalidCredentialsError } from '@/domain/errors'
 import { AccountContext } from '@/presentation/contexts'
 import { Login } from '@/presentation/pages'
 import { Validation } from '@/presentation/protocols'
-import { InvalidCredentialsError } from '@/domain/errors'
 
+import { mockAccountModel } from '@/tests/domain/mocks'
 import {
   populateInput,
   testButtonIsDisabled,
@@ -33,7 +34,7 @@ describe('Login Page', () => {
   beforeAll(() => {
     setCurrentAccount = jest.fn().mockResolvedValue(undefined)
     validation = mock<Validation>()
-    authentication = jest.fn().mockResolvedValue({ accessToken: 'any_access_token', name: 'any_name' })
+    authentication = jest.fn().mockResolvedValue(mockAccountModel())
   })
 
   beforeEach(() => {
@@ -149,7 +150,7 @@ describe('Login Page', () => {
   it('Should call UpdateCurrentAccount on success', async () => {
     await simulateValidSubmit()
 
-    expect(setCurrentAccount).toHaveBeenCalledWith({ accessToken: 'any_access_token', name: 'any_name' })
+    expect(setCurrentAccount).toHaveBeenCalledWith(mockAccountModel())
     expect(setCurrentAccount).toHaveBeenCalledTimes(1)
   })
 

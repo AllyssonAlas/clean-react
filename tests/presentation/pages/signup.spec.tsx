@@ -8,6 +8,7 @@ import { AccountContext } from '@/presentation/contexts'
 import { SignUp } from '@/presentation/pages'
 import { Validation } from '@/presentation/protocols'
 
+import { mockAccountModel } from '@/tests/domain/mocks'
 import {
   populateInput,
   testButtonIsDisabled,
@@ -35,7 +36,7 @@ describe('Signup Page', () => {
   beforeAll(() => {
     setCurrentAccount = jest.fn().mockResolvedValue(undefined)
     validation = mock<Validation>()
-    addAccount = jest.fn().mockResolvedValue({ accessToken: 'any_access_token', name: 'any_name' })
+    addAccount = jest.fn().mockResolvedValue(mockAccountModel())
   })
 
   beforeEach(() => {
@@ -185,7 +186,7 @@ describe('Signup Page', () => {
   it('Should call UpdateCurrentAccount on success', async () => {
     await simulateValidSubmit()
 
-    expect(setCurrentAccount).toHaveBeenCalledWith({ accessToken: 'any_access_token', name: 'any_name' })
+    expect(setCurrentAccount).toHaveBeenCalledWith(mockAccountModel())
     expect(setCurrentAccount).toHaveBeenCalledTimes(1)
     expect(history.location.pathname).toBe('/')
     expect(history.index).toBe(0)

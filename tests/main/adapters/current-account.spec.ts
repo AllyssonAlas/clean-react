@@ -2,17 +2,18 @@ import { UnexpectedError } from '@/domain/errors'
 import { LocalStorageAdapter } from '@/infra/gateways'
 import { setCurrentAccountAdapter, getCurrentAccountAdapter } from '@/main/adapters'
 
+import { mockAccountModel } from '@/tests/domain/mocks'
+
 jest.mock('@/infra/gateways/local-storage-adapter')
 
 describe('CurrentAccountAdapter', () => {
   describe('setCurrentAccountAdapter', () => {
     it('Should call LocalStorageAdapter.set with correct input', () => {
-      const account = { accessToken: 'any_access_token', name: 'any_name' }
       const setSpy = jest.spyOn(LocalStorageAdapter.prototype, 'set')
 
-      setCurrentAccountAdapter(account)
+      setCurrentAccountAdapter(mockAccountModel())
 
-      expect(setSpy).toHaveBeenCalledWith({ key: 'account', value: account })
+      expect(setSpy).toHaveBeenCalledWith({ key: 'account', value: mockAccountModel() })
     })
 
     it('Should throw UnexpectedError', () => {
@@ -33,14 +34,11 @@ describe('CurrentAccountAdapter', () => {
     })
 
     it('Should return same output as LocalStorageAdapter.get', () => {
-      const account = { accessToken: 'any_access_token', name: 'any_name' }
-      jest
-        .spyOn(LocalStorageAdapter.prototype, 'get')
-        .mockReturnValue({ accessToken: 'any_access_token', name: 'any_name' })
+      jest.spyOn(LocalStorageAdapter.prototype, 'get').mockReturnValue(mockAccountModel())
 
       const result = getCurrentAccountAdapter()
 
-      expect(result).toEqual(account)
+      expect(result).toEqual(mockAccountModel())
     })
   })
 })
