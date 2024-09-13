@@ -11,10 +11,10 @@ export const SurveyItem: React.FC<Props> = ({ survey }) => {
   return (
     <li className={'surveyItemWrap'}>
       <div className={'surveyContent'}>
-        <Icon className={'iconWrap'} iconName={'thumbUp'} />
+        <Icon className={'iconWrap'} iconName={survey.didAnswer ? 'thumbUp' : 'thumbDown'} />
         <time>
           <span className={'day'} data-testid='day'>
-            {survey.date.getDate()}
+            {survey.date.getDate().toString().padStart(2, '0')}
           </span>
           <span className={'month'} data-testid='month'>
             {survey.date.toLocaleString('pt-BR', { month: 'short' }).replace('.', '')}
