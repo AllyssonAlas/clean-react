@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { UnexpectedError } from '@/domain/errors'
 import { SurveyList } from '@/presentation/pages'
@@ -51,5 +51,18 @@ describe('SurveyList Page', () => {
 
     expect(screen.queryByTestId('survey-list')).not.toBeInTheDocument()
     expect(errorElement).toHaveTextContent(error.message)
+  })
+
+  it('Should call LoadSurveyList on reload', async () => {
+    const error = new UnexpectedError()
+    const loadSurveyList = jest.fn().mockRejectedValue(error)
+    makeSut(loadSurveyList)
+
+    await screen.findByTestId('error')
+    await waitFor(() => screen.getByRole('heading'))
+
+    fireEvent.click(screen.getByTestId('reload'))
+    expect(loadSurveyList).toHaveBeenCalledTimes(2)
+    await waitFor(() => screen.getByRole('heading'))
   })
 })
