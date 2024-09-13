@@ -12,4 +12,9 @@ export const mockAddAccountInput = () => ({
   passwordConfirmation: 'any_password',
 })
 
-export const mockLoadSurveyListOutput = () => [mockSurveyModel()]
+export const mockLoadSurveyListOutput = () => [
+  mockSurveyModel(),
+  mockSurveyModel(),
+  mockSurveyModel(),
+  mockSurveyModel(),
+]

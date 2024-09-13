@@ -63,9 +63,15 @@ describe('LoadSurveyList', () => {
   })
 
   it('Should return a SurveyModel list if HttpPostClient returns 200', async () => {
+    const getOutput = mockLoadSurveyListOutput()
+    httpGetClient.get.mockResolvedValueOnce({
+      statusCode: 200,
+      body: getOutput,
+    })
+
     const result = await sut()
 
-    expect(result).toEqual(mockLoadSurveyListOutput())
+    expect(result).toEqual(getOutput)
   })
 
   it('Should return a SurveyModel list if HttpPostClient returns 200', async () => {
