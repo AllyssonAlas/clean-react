@@ -14,7 +14,7 @@ export const Icon: React.FC<Props> = ({ iconName, className }: Props) => {
   const iconColor = iconName === 'thumbDown' ? 'red' : 'green'
   return (
     <div className={['iconWrap', iconColor, className].join(' ')}>
-      <img className={'icon'} src={IconName[iconName]} />
+      <img data-testid='icon' className={'icon'} src={IconName[iconName]} />
     </div>
   )
 }
