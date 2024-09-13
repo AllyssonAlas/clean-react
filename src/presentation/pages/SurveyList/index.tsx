@@ -16,13 +16,14 @@ export const SurveyList: React.FC<Props> = ({ loadSurveyList }) => {
   const [state, setState] = useState({
     surveys: [] as SurveyModel[],
     error: '',
+    reload: false,
   })
 
   useEffect(() => {
     loadSurveyList()
       .then((surveys) => setState((prevState) => ({ ...prevState, surveys })))
-      .catch((error) => setState({ error: error.message, surveys: [] }))
-  }, [])
+      .catch((error) => setState((prevState) => ({ ...prevState, error: error.message })))
+  }, [state.reload])
 
   return (
     <div className={'surveyListWrap'}>
