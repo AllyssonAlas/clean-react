@@ -10,7 +10,7 @@ export const Error: React.FC = () => {
     setState((prevState) => ({ surveys: [], error: '', reload: !prevState.reload }))
   }
   return (
-    <div>
+    <div className='errorWrap'>
       <span data-testid='error'>{state.error}</span>
       <button data-testid='reload' onClick={reload}>
         Tentar novamente
