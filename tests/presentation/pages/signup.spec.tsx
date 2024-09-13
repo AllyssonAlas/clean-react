@@ -1,5 +1,5 @@
 import { Router } from 'react-router-dom'
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { mock, MockProxy } from 'jest-mock-extended'
 import { createMemoryHistory } from 'history'
 
@@ -50,8 +50,6 @@ const makeSut = (error: string = undefined): SutTypes => {
 }
 
 describe('Signup Page', () => {
-  afterEach(cleanup)
-
   it('Should start with initial state', async () => {
     makeSut('validation_error')
 
