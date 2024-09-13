@@ -18,6 +18,12 @@ import {
   testStatusForField,
 } from '@/tests/presentation/utils'
 
+type SutTypes = {
+  setCurrentAccount: jest.Mock
+  validation: MockProxy<Validation>
+  authentication: jest.Mock
+}
+
 const history = createMemoryHistory({ initialEntries: ['/login'] })
 
 const simulateValidSubmit = async (): Promise<void> => {
@@ -26,41 +32,26 @@ const simulateValidSubmit = async (): Promise<void> => {
   await fireEvent.submit(screen.getByTestId('form'))
 }
 
-describe('Login Page', () => {
-  let setCurrentAccount: jest.Mock
-  let validation: MockProxy<Validation>
-  let authentication: jest.Mock
+const makeSut = (error: string = undefined): SutTypes => {
+  const setCurrentAccount = jest.fn().mockResolvedValue(undefined)
+  const validation = mock<Validation>()
+  validation.validate.mockReturnValue(error)
+  const authentication = jest.fn().mockResolvedValue(mockAccountModel())
+  render(
+    <AccountContext.Provider value={{ setCurrentAccount }}>
+      <Router location={history.location} navigator={history}>
+        <Login authentication={authentication} validation={validation} />
+      </Router>
+    </AccountContext.Provider>,
+  )
+  return { setCurrentAccount, validation, authentication }
+}
 
-  beforeAll(() => {
-    setCurrentAccount = jest.fn().mockResolvedValue(undefined)
-    validation = mock<Validation>()
-    authentication = jest.fn().mockResolvedValue(mockAccountModel())
-  })
-
-  beforeEach(() => {
-    validation.validate.mockReturnValue(undefined)
-    render(
-      <AccountContext.Provider value={{ setCurrentAccount }}>
-        <Router location={history.location} navigator={history}>
-          <Login authentication={authentication} validation={validation} />
-        </Router>
-      </AccountContext.Provider>,
-    )
-  })
-
+describe('LoginPage', () => {
   afterEach(cleanup)
 
   it('Should start with initial state', async () => {
-    validation.validate.mockReturnValue('validation_error')
-    cleanup()
-
-    render(
-      <AccountContext.Provider value={{ setCurrentAccount }}>
-        <Router location={history.location} navigator={history}>
-          <Login authentication={authentication} validation={validation} />
-        </Router>
-      </AccountContext.Provider>,
-    )
+    makeSut('validation_error')
 
     testChildCount('error-wrap', 0)
     testButtonIsDisabled('submit', true)
@@ -69,7 +60,7 @@ describe('Login Page', () => {
   })
 
   it('Should show email error if validation fails', () => {
-    validation.validate.mockReturnValue('validation_error')
+    makeSut('validation_error')
 
     populateInput('email')
 
@@ -77,7 +68,7 @@ describe('Login Page', () => {
   })
 
   it('Should show password error if validation fails', async () => {
-    validation.validate.mockReturnValue('validation_error')
+    makeSut('validation_error')
 
     populateInput('password')
 
@@ -85,18 +76,24 @@ describe('Login Page', () => {
   })
 
   it('Should show valid email state if validation succeeds', () => {
+    makeSut()
+
     populateInput('email')
 
     testStatusForField('email')
   })
 
   it('Should show valid password state if validation succeeds', () => {
+    makeSut()
+
     populateInput('password')
 
     testStatusForField('password')
   })
 
   it('Should enable submit button if form is valid', () => {
+    makeSut()
+
     populateInput('email')
     populateInput('password')
 
@@ -104,12 +101,16 @@ describe('Login Page', () => {
   })
 
   it('Should show spinner on submit', () => {
+    makeSut()
+
     simulateValidSubmit()
 
     testElementExists('spinner')
   })
 
   it('Should call Authentication with correct input', () => {
+    const { authentication } = makeSut()
+
     simulateValidSubmit()
 
     expect(authentication).toHaveBeenCalledWith(
@@ -122,6 +123,8 @@ describe('Login Page', () => {
   })
 
   it('Should call Authentication only once', () => {
+    const { authentication } = makeSut()
+
     simulateValidSubmit()
     simulateValidSubmit()
 
@@ -129,7 +132,7 @@ describe('Login Page', () => {
   })
 
   it('Should not call Authentication if form is invalid', () => {
-    validation.validate.mockReturnValue('validation_error')
+    const { authentication } = makeSut('validation_error')
 
     simulateValidSubmit()
 
@@ -137,6 +140,7 @@ describe('Login Page', () => {
   })
 
   it('Should present error if Authentication fails', async () => {
+    const { authentication } = makeSut()
     const error = new InvalidCredentialsError()
     authentication.mockRejectedValueOnce(error)
 
@@ -148,13 +152,17 @@ describe('Login Page', () => {
   })
 
   it('Should call UpdateCurrentAccount on success', async () => {
+    const { setCurrentAccount } = makeSut()
+
     await simulateValidSubmit()
 
     expect(setCurrentAccount).toHaveBeenCalledWith(mockAccountModel())
     expect(setCurrentAccount).toHaveBeenCalledTimes(1)
   })
 
-  it('Should got to Signup page', async () => {
+  it('Should go to Signup page', async () => {
+    makeSut()
+
     fireEvent.click(screen.getByTestId('signup'))
 
     expect(history.location.pathname).toBe('/signup')
