@@ -4,7 +4,7 @@ import { SurveyModel } from '@/domain/models'
 import { LoadSurveyList } from '@/domain/usecases'
 import { SurveyContext } from '@/presentation/contexts'
 import { Header, Footer } from '@/presentation/components'
-import { ListItem } from './components'
+import { ListItem, Error } from './components'
 
 import './styles.scss'
 
@@ -15,10 +15,13 @@ type Props = {
 export const SurveyList: React.FC<Props> = ({ loadSurveyList }) => {
   const [state, setState] = useState({
     surveys: [] as SurveyModel[],
+    error: '',
   })
 
   useEffect(() => {
-    loadSurveyList().then((surveys) => setState((prevState) => ({ ...prevState, surveys })))
+    loadSurveyList()
+      .then((surveys) => setState((prevState) => ({ ...prevState, surveys })))
+      .catch((error) => setState({ error: error.message, surveys: [] }))
   }, [])
 
   return (
@@ -27,7 +30,7 @@ export const SurveyList: React.FC<Props> = ({ loadSurveyList }) => {
       <div className={'contentWrap'}>
         <h2>Enquetes</h2>
         <SurveyContext.Provider value={{ state, setState }}>
-          <ListItem />
+          {state.error ? <Error /> : <ListItem />}
         </SurveyContext.Provider>
       </div>
       <Footer />
