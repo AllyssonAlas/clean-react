@@ -9,7 +9,7 @@ import { ListItem, Error } from './components'
 import './styles.scss'
 
 type Props = {
-  loadSurveyList?: LoadSurveyList
+  loadSurveyList: LoadSurveyList
 }
 
 export const SurveyList: React.FC<Props> = ({ loadSurveyList }) => {
