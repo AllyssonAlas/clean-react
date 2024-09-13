@@ -9,14 +9,7 @@ import { Login } from '@/presentation/pages'
 import { Validation } from '@/presentation/protocols'
 
 import { mockAccountModel } from '@/tests/domain/mocks'
-import {
-  populateInput,
-  testButtonIsDisabled,
-  testChildCount,
-  testElementExists,
-  testElementText,
-  testStatusForField,
-} from '@/tests/presentation/utils'
+import { populateInput, testStatusForField } from '@/tests/presentation/utils'
 
 type SutTypes = {
   setCurrentAccount: jest.Mock
@@ -51,8 +44,8 @@ describe('LoginPage', () => {
   it('Should start with initial state', async () => {
     makeSut('validation_error')
 
-    testChildCount('error-wrap', 0)
-    testButtonIsDisabled('submit', true)
+    expect(screen.getByTestId('error-wrap').children).toHaveLength(0)
+    expect(screen.getByTestId('submit')).toBeDisabled()
     testStatusForField('email', 'validation_error')
     testStatusForField('password', 'validation_error')
   })
@@ -95,7 +88,7 @@ describe('LoginPage', () => {
     populateInput('email')
     populateInput('password')
 
-    testButtonIsDisabled('submit', false)
+    expect(screen.getByTestId('submit')).toBeEnabled()
   })
 
   it('Should show spinner on submit', () => {
@@ -103,7 +96,7 @@ describe('LoginPage', () => {
 
     simulateValidSubmit()
 
-    testElementExists('spinner')
+    expect(screen.queryByTestId('spinner')).toBeInTheDocument()
   })
 
   it('Should call Authentication with correct input', () => {
@@ -146,7 +139,7 @@ describe('LoginPage', () => {
     const errorWrap = await screen.findByTestId('error-wrap')
 
     expect(errorWrap.childElementCount).toBe(1)
-    testElementText('main-error', error.message)
+    expect(screen.getByTestId('main-error')).toHaveTextContent(error.message)
   })
 
   it('Should call UpdateCurrentAccount on success', async () => {
