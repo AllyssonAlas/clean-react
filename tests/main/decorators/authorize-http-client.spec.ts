@@ -49,4 +49,17 @@ describe('AuthorizeHttpClientDecorator', () => {
     })
     expect(storage.get).toHaveBeenCalledTimes(1)
   })
+
+  it('Should merge headers to HttpClient', async () => {
+    await sut.get(request)
+
+    expect(httpGetClient.get).toHaveBeenCalledWith({
+      url: 'any_url',
+      headers: {
+        'x-access-token': mockAccountModel().accessToken,
+        any: 'any',
+      },
+    })
+    expect(storage.get).toHaveBeenCalledTimes(1)
+  })
 })
