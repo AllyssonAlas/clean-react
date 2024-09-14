@@ -3,6 +3,8 @@ import { mock, MockProxy } from 'jest-mock-extended'
 import { GetStorage, HttpGetClient } from '@/domain/contracts/gateways'
 import { AuthorizeHttpClientDecorator } from '@/main/decorators'
 
+import { mockAccountModel } from '@/tests/domain/mocks'
+
 describe('AuthorizeHttpClientDecorator', () => {
   let request: { url: string; headers: object }
   let httpGetClient: MockProxy<HttpGetClient>
@@ -13,6 +15,7 @@ describe('AuthorizeHttpClientDecorator', () => {
     request = { url: 'any_url', headers: { any: 'any' } }
     httpGetClient = mock()
     storage = mock()
+    storage.get.mockReturnValue(mockAccountModel())
   })
 
   beforeEach(() => {
@@ -27,9 +30,23 @@ describe('AuthorizeHttpClientDecorator', () => {
   })
 
   it('Should not add headers if GetStorage result is invalid', async () => {
+    storage.get.mockReturnValueOnce(null)
+
     await sut.get({ url: 'any_url' })
 
     expect(httpGetClient.get).toHaveBeenCalledWith({ url: 'any_url' })
+    expect(storage.get).toHaveBeenCalledTimes(1)
+  })
+
+  it('Should add headers to HttpClient', async () => {
+    await sut.get({ url: 'any_url' })
+
+    expect(httpGetClient.get).toHaveBeenCalledWith({
+      url: 'any_url',
+      headers: {
+        'x-access-token': mockAccountModel().accessToken,
+      },
+    })
     expect(storage.get).toHaveBeenCalledTimes(1)
   })
 })
