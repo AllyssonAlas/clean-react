@@ -1,5 +1,6 @@
 import { AccountModel } from '@/domain/models'
 import { HttpPostClient, HttpStatusCode } from '@/domain/contracts/gateways'
+import { AccountApiModel } from '@/domain/contracts/models'
 import { EmailInUseError, UnexpectedError } from '@/domain/errors'
 
 type Input = {
@@ -10,7 +11,7 @@ type Input = {
 }
 type Output = AccountModel
 export type AddAccount = (input: Input) => Promise<Output>
-type Setup = (url: string, httpPostClient: HttpPostClient<Input, Output>) => AddAccount
+type Setup = (url: string, httpPostClient: HttpPostClient<Input, AccountApiModel>) => AddAccount
 
 export const setupAddAccount: Setup = (url, httpPostClient) => {
   return async (input) => {
