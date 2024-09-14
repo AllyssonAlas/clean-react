@@ -33,6 +33,7 @@ export interface HttpGetClient<ResType = any> {
 export namespace HttpGetClient {
   export type Input = {
     url: string
+    headers?: object
   }
 
   export type Output<ResType = any> = HttpResponse<ResType>
