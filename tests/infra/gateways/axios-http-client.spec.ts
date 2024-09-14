@@ -5,15 +5,10 @@ import { AxiosHttpClient } from '@/infra/gateways'
 jest.mock('axios')
 
 describe('AxiosHttpClient', () => {
-  let input: {
-    url: string
-    params: object
-  }
   let fakeAxios: jest.Mocked<typeof axios>
   let sut: AxiosHttpClient
 
   beforeAll(() => {
-    input = { url: 'any_url', params: { any: 'any' } }
     fakeAxios = axios as jest.Mocked<typeof axios>
   })
 
@@ -22,6 +17,15 @@ describe('AxiosHttpClient', () => {
   })
 
   describe('post', () => {
+    let input: {
+      url: string
+      params: object
+    }
+
+    beforeAll(() => {
+      input = { url: 'any_url', params: { any: 'any' } }
+    })
+
     beforeAll(() => {
       fakeAxios.post.mockResolvedValue({ data: 'any_data', status: 200 })
     })
@@ -60,6 +64,15 @@ describe('AxiosHttpClient', () => {
   })
 
   describe('get', () => {
+    let input: {
+      url: string
+      headers: object
+    }
+
+    beforeAll(() => {
+      input = { url: 'any_url', headers: { any: 'any' } }
+    })
+
     beforeAll(() => {
       fakeAxios.get.mockResolvedValue({ data: 'any_data', status: 200 })
     })
@@ -67,7 +80,7 @@ describe('AxiosHttpClient', () => {
     it('Should call get with correct input', async () => {
       await sut.get(input)
 
-      expect(fakeAxios.get).toHaveBeenCalledWith('any_url')
+      expect(fakeAxios.get).toHaveBeenCalledWith('any_url', { headers: { any: 'any' } })
       expect(fakeAxios.get).toHaveBeenCalledTimes(1)
     })
 
