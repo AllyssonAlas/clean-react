@@ -11,6 +11,7 @@ export class AuthorizeHttpClientDecorator implements HttpGetClient {
     if (account?.accessToken) {
       input.headers = {
         'x-access-token': account?.accessToken,
+        ...input.headers,
       }
     }
     await this.httpClient.get(input)
