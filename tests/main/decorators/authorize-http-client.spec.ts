@@ -1,6 +1,6 @@
 import { mock, MockProxy } from 'jest-mock-extended'
 
-import { GetStorage, HttpGetClient } from '@/domain/contracts/gateways'
+import { GetStorage, HttpGetClient, HttpStatusCode } from '@/domain/contracts/gateways'
 import { AuthorizeHttpClientDecorator } from '@/main/decorators'
 
 import { mockAccountModel } from '@/tests/domain/mocks'
@@ -14,6 +14,10 @@ describe('AuthorizeHttpClientDecorator', () => {
   beforeAll(() => {
     request = { url: 'any_url', headers: { any: 'any' } }
     httpGetClient = mock()
+    httpGetClient.get.mockResolvedValue({
+      statusCode: HttpStatusCode.ok,
+      body: 'any_data',
+    })
     storage = mock()
     storage.get.mockReturnValue(mockAccountModel())
   })
@@ -61,5 +65,14 @@ describe('AuthorizeHttpClientDecorator', () => {
       },
     })
     expect(storage.get).toHaveBeenCalledTimes(1)
+  })
+
+  it('Should return the same result as HttpClient', async () => {
+    const result = await sut.get(request)
+
+    expect(result).toEqual({
+      statusCode: HttpStatusCode.ok,
+      body: 'any_data',
+    })
   })
 })
