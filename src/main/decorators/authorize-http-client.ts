@@ -14,7 +14,7 @@ export class AuthorizeHttpClientDecorator implements HttpGetClient {
         ...input.headers,
       }
     }
-    await this.httpClient.get(input)
-    return null
+    const httpResponse = await this.httpClient.get(input)
+    return httpResponse
   }
 }
