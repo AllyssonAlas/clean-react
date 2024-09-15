@@ -1,18 +1,17 @@
 import { useContext } from 'react'
-import { useNavigate } from 'react-router-dom'
 
 import { AccountContext } from '@/presentation/contexts'
+import { useLogout } from '@/presentation/hooks'
 import { Logo } from '@/presentation/components'
 
 import './styles.scss'
 
 export const Header: React.FC = () => {
-  const { setCurrentAccount, getCurrentAccount } = useContext(AccountContext)
-  const navigate = useNavigate()
-  const logout = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+  const logout = useLogout()
+  const { getCurrentAccount } = useContext(AccountContext)
+  const handleLogout = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     event.preventDefault()
-    setCurrentAccount(null)
-    navigate('/login', { replace: true })
+    logout()
   }
   return (
     <header className={'headerWrap'}>
@@ -20,7 +19,7 @@ export const Header: React.FC = () => {
         <Logo />
         <div className={'logoutWrap'}>
           <span data-testid='username'>{getCurrentAccount().name}</span>
-          <a data-testid='logout' href='#' onClick={logout}>
+          <a data-testid='logout' href='#' onClick={handleLogout}>
             Sair
           </a>
         </div>
