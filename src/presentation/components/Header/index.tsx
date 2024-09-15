@@ -7,7 +7,7 @@ import { Logo } from '@/presentation/components'
 import './styles.scss'
 
 export const Header: React.FC = () => {
-  const { setCurrentAccount } = useContext(AccountContext)
+  const { setCurrentAccount, getCurrentAccount } = useContext(AccountContext)
   const navigate = useNavigate()
   const logout = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     event.preventDefault()
@@ -19,7 +19,7 @@ export const Header: React.FC = () => {
       <div className={'headerContent'}>
         <Logo />
         <div className={'logoutWrap'}>
-          <span>Rodrigo</span>
+          <span data-testid='username'>{getCurrentAccount().name}</span>
           <a data-testid='logout' href='#' onClick={logout}>
             Sair
           </a>
