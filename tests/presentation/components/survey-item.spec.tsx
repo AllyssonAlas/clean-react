@@ -2,15 +2,22 @@ import { render, screen } from '@testing-library/react'
 
 import { SurveyModel } from '@/domain/models'
 import { SurveyItem } from '@/presentation/pages/SurveyList/components'
-import { mockSurveyModel } from '@/tests/domain/mocks'
+
+import { mockLoadSurveyListOutput } from '@/tests/domain/mocks'
 
 const makeSut = (survey: SurveyModel) => {
   render(<SurveyItem survey={survey} />)
 }
 
 describe('SurveyItem Component', () => {
+  let survey: SurveyModel
+
+  beforeEach(() => {
+    survey = mockLoadSurveyListOutput()[0]
+  })
+
   it('Should render with correct values', () => {
-    const survey = Object.assign(mockSurveyModel(), {
+    Object.assign(survey, {
       didAnswer: true,
       date: new Date('2020-01-10T00:00:00'),
     })
@@ -28,7 +35,7 @@ describe('SurveyItem Component', () => {
   })
 
   it('Should render with correct values', () => {
-    const survey = Object.assign(mockSurveyModel(), {
+    Object.assign(survey, {
       didAnswer: false,
       date: new Date('2019-05-03T00:00:00'),
     })

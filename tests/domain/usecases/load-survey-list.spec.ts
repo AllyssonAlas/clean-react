@@ -1,15 +1,15 @@
 import { mock, MockProxy } from 'jest-mock-extended'
 
-import { SurveyModel } from '@/domain/models'
+import { SurveyListApiModel } from '@/domain/models/externals'
 import { setupLoadSurveyList, LoadSurveyList } from '@/domain/usecases'
 import { HttpGetClient, HttpStatusCode } from '@/domain/contracts/gateways'
 import { UnexpectedError } from '@/domain/errors'
 
-import { mockLoadSurveyListOutput } from '@/tests/domain/mocks'
+import { mockSurveyListApi } from '@/tests/domain/mocks'
 
 describe('LoadSurveyList', () => {
   let url: string
-  let httpGetClient: MockProxy<HttpGetClient<SurveyModel[]>>
+  let httpGetClient: MockProxy<HttpGetClient<SurveyListApiModel>>
   let sut: LoadSurveyList
 
   beforeAll(() => {
@@ -17,7 +17,7 @@ describe('LoadSurveyList', () => {
     httpGetClient = mock()
     httpGetClient.get.mockResolvedValue({
       statusCode: 200,
-      body: mockLoadSurveyListOutput(),
+      body: mockSurveyListApi(),
     })
   })
 
@@ -63,15 +63,20 @@ describe('LoadSurveyList', () => {
   })
 
   it('Should return a SurveyModel list if HttpPostClient returns 200', async () => {
-    const getOutput = mockLoadSurveyListOutput()
+    const apiOutput = mockSurveyListApi()
+    const useCaseOutput = apiOutput.map(({ date, ...survey }) => ({
+      ...survey,
+      date: new Date(date),
+    }))
+
     httpGetClient.get.mockResolvedValueOnce({
       statusCode: 200,
-      body: getOutput,
+      body: apiOutput,
     })
 
     const result = await sut()
 
-    expect(result).toEqual(getOutput)
+    expect(result).toEqual(useCaseOutput)
   })
 
   it('Should return a SurveyModel list if HttpPostClient returns 200', async () => {

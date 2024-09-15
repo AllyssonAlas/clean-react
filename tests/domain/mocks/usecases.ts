@@ -1,4 +1,4 @@
-import { mockSurveyModel } from '@/tests/domain/mocks'
+import { mockSurveyListApi } from '@/tests/domain/mocks'
 
 export const mockAuthenticationInput = () => ({
   email: 'any_email@mail.com',
@@ -12,9 +12,8 @@ export const mockAddAccountInput = () => ({
   passwordConfirmation: 'any_password',
 })
 
-export const mockLoadSurveyListOutput = () => [
-  mockSurveyModel(),
-  mockSurveyModel(),
-  mockSurveyModel(),
-  mockSurveyModel(),
-]
+export const mockLoadSurveyListOutput = () =>
+  mockSurveyListApi().map(({ date, ...survey }) => ({
+    ...survey,
+    date: new Date(date),
+  }))
