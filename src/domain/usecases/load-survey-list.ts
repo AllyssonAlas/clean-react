@@ -1,7 +1,7 @@
 import { SurveyModel } from '@/domain/models'
 import { HttpGetClient, HttpStatusCode } from '@/domain/contracts/gateways'
 import { SurveyListApiModel } from '@/domain/models/externals'
-import { UnexpectedError } from '@/domain/errors'
+import { AccessDeniedError, UnexpectedError } from '@/domain/errors'
 
 type Output = Array<SurveyModel>
 export type LoadSurveyList = () => Promise<Output>
@@ -17,6 +17,8 @@ export const setupLoadSurveyList: Setup = (url, httpGetClient) => {
           ...survey,
           date: new Date(date),
         }))
+      case HttpStatusCode.forbidden:
+        throw new AccessDeniedError()
       default:
         throw new UnexpectedError()
     }
