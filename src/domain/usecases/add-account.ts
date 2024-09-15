@@ -1,6 +1,6 @@
 import { AccountModel } from '@/domain/models'
 import { HttpPostClient, HttpStatusCode } from '@/domain/contracts/gateways'
-import { AccountApiModel } from '@/domain/contracts/models'
+import { AccountApiModel } from '@/domain/models/externals'
 import { EmailInUseError, UnexpectedError } from '@/domain/errors'
 
 type Input = {

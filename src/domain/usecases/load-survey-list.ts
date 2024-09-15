@@ -1,6 +1,6 @@
 import { SurveyModel } from '@/domain/models'
 import { HttpGetClient, HttpStatusCode } from '@/domain/contracts/gateways'
-import { SurveyListApiModel } from '@/domain/contracts/models'
+import { SurveyListApiModel } from '@/domain/models/externals'
 import { UnexpectedError } from '@/domain/errors'
 
 type Output = Array<SurveyModel>
@@ -13,7 +13,10 @@ export const setupLoadSurveyList: Setup = (url, httpGetClient) => {
     switch (statusCode) {
       case HttpStatusCode.ok:
       case HttpStatusCode.noContent:
-        return body
+        return body.map(({ date, ...survey }) => ({
+          ...survey,
+          date: new Date(date),
+        }))
       default:
         throw new UnexpectedError()
     }
