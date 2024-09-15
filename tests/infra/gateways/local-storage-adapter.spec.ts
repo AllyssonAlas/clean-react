@@ -34,6 +34,13 @@ describe('LocalStorageAdapter', () => {
       )
       expect(fakeLocalStorage.setItem).toHaveBeenCalledTimes(1)
     })
+
+    it('Should call localStorage.removeItem if value is null or undefined', () => {
+      sut.set({ ...input, value: undefined })
+
+      expect(fakeLocalStorage.removeItem).toHaveBeenCalledWith('any_key')
+      expect(fakeLocalStorage.removeItem).toHaveBeenCalledTimes(1)
+    })
   })
 
   describe('set', () => {
