@@ -3,7 +3,7 @@ import { mock, MockProxy } from 'jest-mock-extended'
 import { SurveyListApiModel } from '@/domain/models/externals'
 import { setupLoadSurveyList, LoadSurveyList } from '@/domain/usecases'
 import { HttpGetClient, HttpStatusCode } from '@/domain/contracts/gateways'
-import { UnexpectedError } from '@/domain/errors'
+import { UnexpectedError, AccessDeniedError } from '@/domain/errors'
 
 import { mockSurveyListApi } from '@/tests/domain/mocks'
 
@@ -32,14 +32,14 @@ describe('LoadSurveyList', () => {
     expect(httpGetClient.get).toHaveBeenCalledTimes(1)
   })
 
-  it('Should throw UnexpectedError if HttpPostClient returns 403', async () => {
+  it('Should throw AccessDenied if HttpPostClient returns 403', async () => {
     httpGetClient.get.mockResolvedValueOnce({
       statusCode: HttpStatusCode.forbidden,
     })
 
     const promise = sut()
 
-    await expect(promise).rejects.toThrow(new UnexpectedError())
+    await expect(promise).rejects.toThrow(new AccessDeniedError())
   })
 
   it('Should throw UnexpectedError if HttpPostClient returns 404', async () => {
