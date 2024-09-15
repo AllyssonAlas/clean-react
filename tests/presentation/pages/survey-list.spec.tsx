@@ -6,7 +6,7 @@ import { UnexpectedError } from '@/domain/errors'
 import { AccountContext } from '@/presentation/contexts'
 import { SurveyList } from '@/presentation/pages'
 
-import { mockLoadSurveyListOutput } from '@/tests/domain/mocks'
+import { mockAccountModel, mockLoadSurveyListOutput } from '@/tests/domain/mocks'
 
 type SutTypes = {
   loadSurveyList: jest.Mock
@@ -16,7 +16,7 @@ const history = createMemoryHistory({ initialEntries: ['/login'] })
 
 const makeSut = (loadSurveyList = jest.fn().mockResolvedValue(mockLoadSurveyListOutput())): SutTypes => {
   render(
-    <AccountContext.Provider value={{ setCurrentAccount: jest.fn() }}>
+    <AccountContext.Provider value={{ setCurrentAccount: jest.fn(), getCurrentAccount: () => mockAccountModel() }}>
       <Router location={history.location} navigator={history}>
         <SurveyList loadSurveyList={loadSurveyList} />
       </Router>
