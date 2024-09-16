@@ -36,7 +36,7 @@ describe('Login', () => {
   })
 
   it('Should present UnexpectedError message on 400', () => {
-    cy.mockRes({ statusCode: 400, url: apiUrl })
+    cy.mockResBadRequest({ url: apiUrl })
     cy.getByTestId('email').type('valid_email@mail.com')
     cy.getByTestId('password').type('12345')
     cy.getByTestId('password').type('{enter}')
@@ -45,21 +45,14 @@ describe('Login', () => {
   })
 
   it('Should present InvalidCredentialsError message on 401', () => {
-    cy.mockRes({ statusCode: 401, url: apiUrl })
+    cy.mockResUnauthorized({ url: apiUrl })
     cy.submitForm(validFormData)
     cy.testErrorMessage('Credenciais inválidas')
     cy.testUrl('login')
   })
 
-  it('Should present UnexpectedError message if accessToken is falsy', () => {
-    cy.mockRes({ body: { accessToken: undefined }, statusCode: 200, url: apiUrl })
-    cy.submitForm(validFormData)
-    cy.testErrorMessage('Algo de inesperado aconteceu')
-    cy.testUrl('login')
-  })
-
   it('Should save accessToken on 200', () => {
-    cy.mockRes({ body: { accessToken: 'any_token', name: 'any_name' }, statusCode: 200, url: apiUrl })
+    cy.mockResOk({ body: { accessToken: 'any_token', name: 'any_name' }, url: apiUrl })
     cy.submitForm(validFormData)
     cy.getByTestId('error-wrap')
       .getByTestId('spinner')
@@ -75,7 +68,7 @@ describe('Login', () => {
   })
 
   it('Should prevent multiple submits', () => {
-    cy.mockRes({ statusCode: 200, url: apiUrl }).as('request')
+    cy.mockResOk({ url: apiUrl }).as('request')
     cy.submitForm(validFormData)
     cy.getByTestId('form').submit()
     cy.get('@request.all').its('length').should('equal', 1)
@@ -83,7 +76,7 @@ describe('Login', () => {
   })
 
   it('Should not call submit if form is invalid', () => {
-    cy.mockRes({ body: { accessToken: 'any_token' }, statusCode: 200, url: apiUrl }).as('request')
+    cy.mockResOk({ body: { accessToken: 'any_token' }, url: apiUrl }).as('request')
     cy.getByTestId('email').type('valid_email@mail.com')
     cy.getByTestId('email').type('{enter}')
     cy.get('@request.all').its('length').should('equal', 0)

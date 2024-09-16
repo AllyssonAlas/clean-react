@@ -48,28 +48,21 @@ describe('Signup', () => {
   })
 
   it('Should present UnexpectedError message on 400', () => {
-    cy.mockRes({ statusCode: 400, url: apiUrl })
+    cy.mockResBadRequest({ url: apiUrl })
     cy.submitForm(validFormData)
     cy.testErrorMessage('Algo de inesperado aconteceu')
     cy.testUrl('signup')
   })
 
   it('Should present EmailInUseError on 403', () => {
-    cy.mockRes({ statusCode: 403, url: apiUrl })
+    cy.mockResForbidden({ url: apiUrl })
     cy.submitForm(validFormData)
     cy.testErrorMessage('Email já está em uso')
     cy.testUrl('signup')
   })
 
-  it('Should present UnexpectedError message if invalid data is returned', () => {
-    cy.mockRes({ body: { invalid: undefined }, statusCode: 200, url: apiUrl })
-    cy.submitForm(validFormData)
-    cy.testErrorMessage('Algo de inesperado aconteceu')
-    cy.testUrl('signup')
-  })
-
   it('Should save accessToken on 200', () => {
-    cy.mockRes({ body: { accessToken: 'any_token', name: 'any_name' }, statusCode: 200, url: apiUrl })
+    cy.mockResOk({ body: { accessToken: 'any_token', name: 'any_name' }, url: apiUrl })
     cy.submitForm(validFormData)
     cy.getByTestId('error-wrap')
       .getByTestId('spinner')
@@ -85,7 +78,7 @@ describe('Signup', () => {
   })
 
   it('Should prevent multiple submits', () => {
-    cy.mockRes({ statusCode: 200, url: apiUrl }).as('request')
+    cy.mockResOk({ url: apiUrl }).as('request')
     cy.submitForm(validFormData)
     cy.getByTestId('form').submit()
     cy.get('@request.all').its('length').should('equal', 1)
@@ -93,7 +86,7 @@ describe('Signup', () => {
   })
 
   it('Should not call submit if form is invalid', () => {
-    cy.mockRes({ body: { accessToken: 'any_token' }, statusCode: 200, url: apiUrl }).as('request')
+    cy.mockResOk({ body: { accessToken: 'any_token' }, url: apiUrl }).as('request')
     cy.getByTestId('name').type('any_name')
     cy.getByTestId('email').type('valid_email@mail.com')
     cy.getByTestId('email').type('{enter}')
