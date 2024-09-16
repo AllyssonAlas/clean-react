@@ -11,7 +11,7 @@ export const FormStatus: React.FC = () => {
   } = useContext(FormContext)
 
   return (
-    <div data-testid={'error-wrap'} className={'errorWrap'}>
+    <div data-testid={'error-wrap'} className={'formStatusWrap'}>
       {loading && <Spinner className={'spinner'} />}
       {formError && (
         <span className={'error'} data-testid={'main-error'}>
