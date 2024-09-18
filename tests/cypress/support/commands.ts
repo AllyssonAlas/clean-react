@@ -7,14 +7,17 @@ Cypress.Commands.add('mockRes', ({ body, statusCode, url }) => {
 Cypress.Commands.add('mockResBadRequest', ({ body, url }) => {
   return cy.mockRes({ statusCode: 400, body, url })
 })
-Cypress.Commands.add('mockResOk', ({ body, url }) => {
-  return cy.mockRes({ statusCode: 200, body, url })
-})
 Cypress.Commands.add('mockResForbidden', ({ body, url }) => {
   return cy.mockRes({ statusCode: 403, body, url })
 })
+Cypress.Commands.add('mockResOk', ({ body, url }) => {
+  return cy.mockRes({ statusCode: 200, body, url })
+})
 Cypress.Commands.add('mockResUnauthorized', ({ body, url }) => {
   return cy.mockRes({ statusCode: 401, body, url })
+})
+Cypress.Commands.add('mockResServerError', ({ body, url }) => {
+  return cy.mockRes({ statusCode: 500, body, url })
 })
 Cypress.Commands.add('submitForm', (inputs) => {
   for (const { field, value } of inputs) {

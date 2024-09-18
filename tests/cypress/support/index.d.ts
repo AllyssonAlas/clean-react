@@ -8,6 +8,7 @@ declare namespace Cypress {
     mockResForbidden(data: { body?: any; url: RegExp }): Chainable<null>
     mockResOk(data: { body?: any; url: RegExp }): Chainable<null>
     mockResUnauthorized(data: { body?: any; url: RegExp }): Chainable<null>
+    mockResServerError(data: { body?: any; url: RegExp }): Chainable<null>
     submitForm(inputs: { field: string; value: string }[]): Chainable<void>
     testErrorMessage(error: string): Chainable<void>
     testInputState(field: string, error?: string): Chainable<void>
