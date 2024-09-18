@@ -12,4 +12,12 @@ describe('SurveyList', () => {
 
     cy.getByTestId('error').should('contain.text', 'Algo de inesperado aconteceu')
   })
+
+  it('Should logout on AccessDeniedError', () => {
+    cy.mockResForbidden({ url: apiUrl })
+
+    cy.visit('')
+
+    cy.testUrl('login')
+  })
 })
