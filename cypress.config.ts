@@ -6,4 +6,5 @@ export default defineConfig({
     supportFile: './tests/cypress/support/e2e.ts',
     specPattern: ['tests/cypress/e2e/**/*.cy.{ts,tsx}'],
   },
+  fixturesFolder: './tests/cypress/fixtures',
 })
