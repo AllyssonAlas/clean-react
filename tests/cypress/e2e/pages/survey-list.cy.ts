@@ -15,6 +15,17 @@ describe('SurveyList', () => {
     cy.getByTestId('error').should('contain.text', 'Algo de inesperado aconteceu')
   })
 
+  it('Should reload on button click', () => {
+    cy.intercept(apiUrl, { statusCode: 500 }).as('request')
+
+    cy.visit('')
+    cy.wait('@request')
+    cy.mockResOk({ url: apiUrl, fixture: 'survey-list' })
+    cy.getByTestId('reload').click()
+
+    cy.get('li:not(:empty)').should('have.length', 2)
+  })
+
   it('Should logout on AccessDeniedError', () => {
     cy.mockResForbidden({ url: apiUrl })
 
