@@ -52,7 +52,7 @@ describe('Login', () => {
   })
 
   it('Should save accessToken on 200', () => {
-    cy.mockResOk({ body: { accessToken: 'any_token', name: 'any_name' }, url: apiUrl })
+    cy.mockResOk({ fixture: 'account', url: apiUrl })
     cy.submitForm(validFormData)
     cy.getByTestId('error-wrap')
       .getByTestId('spinner')
@@ -62,9 +62,9 @@ describe('Login', () => {
       .getByTestId('spinner')
       .should('not.exist')
     cy.testUrl('')
-    cy.window().then(({ localStorage }) =>
-      assert.isOk(localStorage.getItem('account') === JSON.stringify({ accessToken: 'any_token', name: 'any_name' })),
-    )
+    cy.fixture('account').then((account) => {
+      cy.window().then(({ localStorage }) => assert.isOk(localStorage.getItem('account') === JSON.stringify(account)))
+    })
   })
 
   it('Should prevent multiple submits', () => {
@@ -76,7 +76,7 @@ describe('Login', () => {
   })
 
   it('Should not call submit if form is invalid', () => {
-    cy.mockResOk({ body: { accessToken: 'any_token' }, url: apiUrl }).as('request')
+    cy.mockResOk({ fixture: 'account', url: apiUrl }).as('request')
     cy.getByTestId('email').type('valid_email@mail.com')
     cy.getByTestId('email').type('{enter}')
     cy.get('@request.all').its('length').should('equal', 0)

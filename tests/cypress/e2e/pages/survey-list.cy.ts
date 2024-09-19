@@ -2,7 +2,9 @@ const apiUrl = /surveys/
 
 describe('SurveyList', () => {
   beforeEach(() => {
-    localStorage.setItem('account', JSON.stringify({ accessToken: 'any_token', name: 'any_name' }))
+    cy.fixture('account').then((account) => {
+      localStorage.setItem('account', JSON.stringify(account))
+    })
   })
 
   it('Should present error on UnexpectedError', () => {
@@ -26,7 +28,7 @@ describe('SurveyList', () => {
 
     cy.visit('')
 
-    cy.getByTestId('username').should('contain.text', 'any_name')
+    cy.getByTestId('username').should('contain.text', 'Jhonny Doe')
   })
 
   it('Should logout on logout button click', () => {
