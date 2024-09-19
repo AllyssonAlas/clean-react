@@ -28,4 +28,13 @@ describe('SurveyList', () => {
 
     cy.getByTestId('username').should('contain.text', 'any_name')
   })
+
+  it('Should logout on logout button click', () => {
+    cy.mockResOk({ url: apiUrl, body: [] })
+
+    cy.visit('')
+    cy.getByTestId('logout').click()
+
+    cy.testUrl('login')
+  })
 })
