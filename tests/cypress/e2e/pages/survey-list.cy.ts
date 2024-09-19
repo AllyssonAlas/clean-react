@@ -20,4 +20,12 @@ describe('SurveyList', () => {
 
     cy.testUrl('login')
   })
+
+  it('Should present correct account name', () => {
+    cy.mockResOk({ url: apiUrl, body: [] })
+
+    cy.visit('')
+
+    cy.getByTestId('username').should('contain.text', 'any_name')
+  })
 })
