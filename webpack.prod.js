@@ -21,12 +21,13 @@ module.exports = merge(common, {
     ],
   },
   externals: {
+    axios: 'axios',
     react: 'React',
     'react-dom': 'ReactDOM',
   },
   plugins: [
     new DefinePlugin({
-      'process.env.API_URL': JSON.stringify('http://localhost:8000/api'),
+      'process.env.API_URL': JSON.stringify('https://localhost:8000/api'),
     }),
     new HtmlWebpackPlugin({
       template: './template.prod.html',
