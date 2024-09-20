@@ -10,7 +10,7 @@ export default [
   { files: ['**/*.{js,mjs,cjs,ts,jsx,tsx}'] },
   { languageOptions: { parserOptions: { ecmaFeatures: { jsx: true } } } },
   { languageOptions: { globals: globals.browser } },
-  { ignores: ['node_modules', 'dist', 'public', 'jest.config.js', 'webpack.config.js'] },
+  { ignores: ['node_modules', 'dist', 'public', 'jest.config.js', 'webpack.*'] },
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
   ...fixupConfigRules(pluginReactConfig),
