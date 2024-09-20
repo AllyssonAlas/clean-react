@@ -37,6 +37,8 @@
     "eslint-plugin-react": "^7.34.3",
     "express": "^4.21.0",
     "express-history-api-fallback": "^2.2.1",
+    "favicons": "^7.2.0",
+    "favicons-webpack-plugin": "^6.0.1",
     "git-commit-msg-linter": "^5.0.8",
     "globals": "^15.6.0",
     "history": "^5.3.0",
