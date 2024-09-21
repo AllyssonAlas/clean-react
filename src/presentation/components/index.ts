@@ -1,4 +1,5 @@
 export * from './Calendar'
+export * from './Error'
 export * from './Footer'
 export * from './FormStatus'
 export * from './Header'
