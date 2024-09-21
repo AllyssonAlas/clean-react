@@ -1,18 +1,21 @@
 import { mock, MockProxy } from 'jest-mock-extended'
 
+import { SurveyApiModel } from '@/domain/models/externals'
 import { setupLoadSurveyResult, LoadSurveyResult } from '@/domain/usecases'
 import { HttpGetClient, HttpStatusCode } from '@/domain/contracts/gateways'
 import { AccessDeniedError, UnexpectedError } from '@/domain/errors'
 
+import { mockSurveyApiModel } from '@/tests/domain/mocks'
+
 describe('LoadSurveyResult', () => {
   let url: string
-  let httpGetClient: MockProxy<HttpGetClient>
+  let httpGetClient: MockProxy<HttpGetClient<SurveyApiModel>>
   let sut: LoadSurveyResult
 
   beforeAll(() => {
     url = 'any_url'
     httpGetClient = mock()
-    httpGetClient.get.mockResolvedValue({ statusCode: 200 })
+    httpGetClient.get.mockResolvedValue({ statusCode: 200, body: mockSurveyApiModel() })
   })
 
   beforeEach(() => {
@@ -54,5 +57,14 @@ describe('LoadSurveyResult', () => {
     const promise = sut()
 
     await expect(promise).rejects.toThrow(new UnexpectedError())
+  })
+
+  it('Should return a SurveyModel list if HttpPostClient returns 200', async () => {
+    const apiOutput = mockSurveyApiModel()
+    httpGetClient.get.mockResolvedValueOnce({ statusCode: 200, body: apiOutput })
+
+    const result = await sut()
+
+    expect(result).toEqual({ ...apiOutput, date: new Date(apiOutput.date) })
   })
 })
