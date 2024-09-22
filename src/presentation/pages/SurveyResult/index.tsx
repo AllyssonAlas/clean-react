@@ -12,44 +12,42 @@ type Props = {
 }
 
 export const SurveyResult: React.FC<Props> = ({ loadSurveyResult }) => {
-  const [state] = useState({
+  const [state, setState] = useState({
     loading: false,
     error: '',
-    surveyResult: null as SurveyModel,
+    survey: null as SurveyModel,
   })
 
   useEffect(() => {
-    loadSurveyResult()
+    loadSurveyResult().then((survey) => setState((prevState) => ({ ...prevState, survey })))
   }, [])
 
   return (
     <div className={'surveyResultWrap'}>
       <Header />
       <div className={'contentWrap'} data-testid='survey-result'>
-        {state.surveyResult && (
+        {state.survey && (
           <>
             <hgroup>
-              <Calendar date={new Date()} className={'calendarWrap'} />
-              <h2>
-                Qual é seu framework web favorito? Qual é seu framework web favorito? Qual é seu framework web favorito?
-              </h2>
+              <Calendar date={state.survey.date} className={'calendarWrap'} />
+              <h2 data-testid='question'>{state.survey.question}</h2>
             </hgroup>
-            <FlipMove className={'answersList'}>
-              <li>
-                <img src='http://fordevs.herokuapp.com/static/img/logo-react.png' />
-                <span className={'answer'}>ReactJS</span>
-                <span className={'percent'}>50%</span>
-              </li>
-              <li className={'active'}>
-                <img src='http://fordevs.herokuapp.com/static/img/logo-react.png' />
-                <span className={'answer'}>ReactJS</span>
-                <span className={'percent'}>50%</span>
-              </li>
-              <li>
-                <img src='http://fordevs.herokuapp.com/static/img/logo-react.png' />
-                <span className={'answer'}>ReactJS</span>
-                <span className={'percent'}>50%</span>
-              </li>
+            <FlipMove className={'answersList'} data-testid='answers'>
+              {state.survey.answers.map((answer) => (
+                <li
+                  className={answer.isCurrentAccountAnswer ? 'active' : ''}
+                  data-testid='answer-wrap'
+                  key={answer.answer}
+                >
+                  {answer.image && <img data-testid='image' src={answer.image} alt={answer.answer} />}
+                  <span data-testid='answer' className={'answer'}>
+                    {answer.answer}
+                  </span>
+                  <span data-testid='percent' className={'percent'}>
+                    {answer.percent}%
+                  </span>
+                </li>
+              ))}
             </FlipMove>
             <button>Voltar</button>
           </>
