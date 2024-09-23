@@ -1,8 +1,8 @@
 import { Router } from 'react-router-dom'
 import { render, screen, waitFor } from '@testing-library/react'
-import { createMemoryHistory } from 'history'
+import { createMemoryHistory, MemoryHistory } from 'history'
 
-import { UnexpectedError } from '@/domain/errors'
+import { AccessDeniedError, UnexpectedError } from '@/domain/errors'
 import { AccountContext } from '@/presentation/contexts'
 import { SurveyResult } from '@/presentation/pages'
 
@@ -10,18 +10,21 @@ import { mockAccountModel, mockSurveyModel } from '@/tests/domain/mocks'
 
 type SutTypes = {
   loadSurveyResult: jest.Mock
+  setCurrentAccount: jest.Mock
+  history: MemoryHistory
 }
 
 const makeSut = (loadSurveyResult = jest.fn().mockResolvedValue(mockSurveyModel())): SutTypes => {
   const history = createMemoryHistory({ initialEntries: ['/'] })
+  const setCurrentAccount = jest.fn()
   render(
-    <AccountContext.Provider value={{ setCurrentAccount: jest.fn(), getCurrentAccount: () => mockAccountModel() }}>
+    <AccountContext.Provider value={{ setCurrentAccount, getCurrentAccount: () => mockAccountModel() }}>
       <Router location={history.location} navigator={history}>
         <SurveyResult loadSurveyResult={loadSurveyResult} />
       </Router>
     </AccountContext.Provider>,
   )
-  return { loadSurveyResult }
+  return { loadSurveyResult, history, setCurrentAccount }
 }
 
 describe('SurveyResult Page', () => {
@@ -85,5 +88,16 @@ describe('SurveyResult Page', () => {
     expect(screen.queryByTestId('question')).not.toBeInTheDocument()
     expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
     expect(screen.queryByTestId('error')).not.toBeInTheDocument()
+  })
+
+  it('Should logout on AccessDeniedError', async () => {
+    const loadSurveyResult = jest.fn().mockRejectedValue(new AccessDeniedError())
+    const { setCurrentAccount, history } = makeSut(loadSurveyResult)
+
+    await waitFor(() => screen.getByTestId('survey-result'))
+
+    expect(setCurrentAccount).toHaveBeenCalledWith(null)
+    expect(setCurrentAccount).toHaveBeenCalledTimes(1)
+    expect(history.location.pathname).toBe('/login')
   })
 })
