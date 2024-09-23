@@ -26,4 +26,12 @@ describe('SurveyList', () => {
 
     cy.getByTestId('question').should('exist')
   })
+
+  it('Should logout on AccessDeniedError', () => {
+    cy.mockResForbidden({ url: apiUrl })
+
+    cy.visit('/surveys/any_id')
+
+    cy.testUrl('login')
+  })
 })
