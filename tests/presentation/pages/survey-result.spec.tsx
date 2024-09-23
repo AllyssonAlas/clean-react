@@ -1,5 +1,5 @@
 import { Router } from 'react-router-dom'
-import { render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { createMemoryHistory, MemoryHistory } from 'history'
 
 import { AccessDeniedError, UnexpectedError } from '@/domain/errors'
@@ -99,5 +99,18 @@ describe('SurveyResult Page', () => {
     expect(setCurrentAccount).toHaveBeenCalledWith(null)
     expect(setCurrentAccount).toHaveBeenCalledTimes(1)
     expect(history.location.pathname).toBe('/login')
+  })
+
+  it('Should call LoadSurveyResult on reload', async () => {
+    const error = new UnexpectedError()
+    const loadSurveyResult = jest.fn().mockRejectedValue(error)
+    makeSut(loadSurveyResult)
+
+    await screen.findByTestId('error')
+    await waitFor(() => screen.getByTestId('survey-result'))
+
+    fireEvent.click(screen.getByTestId('reload'))
+    expect(loadSurveyResult).toHaveBeenCalledTimes(2)
+    await waitFor(() => screen.getByTestId('survey-result'))
   })
 })
