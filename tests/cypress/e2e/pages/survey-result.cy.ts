@@ -14,4 +14,16 @@ describe('SurveyList', () => {
 
     cy.getByTestId('error').should('contain.text', 'Algo de inesperado aconteceu')
   })
+
+  it('Should reload on button click', () => {
+    cy.intercept(apiUrl, { statusCode: 500 }).as('request')
+
+    cy.visit('/surveys/any_id')
+    cy.wait('@request')
+    cy.mockResOk({ url: apiUrl, fixture: 'survey' })
+    cy.wait('@request')
+    cy.getByTestId('reload').click()
+
+    cy.getByTestId('question').should('exist')
+  })
 })
