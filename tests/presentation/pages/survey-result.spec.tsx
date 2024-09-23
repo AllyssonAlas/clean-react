@@ -2,6 +2,7 @@ import { Router } from 'react-router-dom'
 import { render, screen, waitFor } from '@testing-library/react'
 import { createMemoryHistory } from 'history'
 
+import { UnexpectedError } from '@/domain/errors'
 import { AccountContext } from '@/presentation/contexts'
 import { SurveyResult } from '@/presentation/pages'
 
@@ -72,5 +73,17 @@ describe('SurveyResult Page', () => {
     const percents = screen.queryAllByTestId('percent')
     expect(percents[0]).toHaveTextContent(`${survey.answers[0].percent}%`)
     expect(percents[1]).toHaveTextContent(`${survey.answers[1].percent}%`)
+  })
+
+  it('Should render error on UnexpectedError', async () => {
+    const error = new UnexpectedError()
+    const loadSurveyResult = jest.fn().mockRejectedValue(error)
+    makeSut(loadSurveyResult)
+
+    await waitFor(() => screen.getByTestId('survey-result'))
+
+    expect(screen.queryByTestId('question')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('error')).not.toBeInTheDocument()
   })
 })
