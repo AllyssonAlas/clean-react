@@ -3,6 +3,7 @@ import FlipMove from 'react-flip-move'
 
 import { SurveyModel } from '@/domain/models'
 import { Calendar } from '@/presentation/components'
+import { SurveyAnswer } from '../SurveyAnswer'
 
 import './styles.scss'
 
@@ -20,17 +21,11 @@ export const Survey: React.FC<Props> = ({ survey }: Props) => {
         <h2 data-testid='question'>{survey.question}</h2>
       </hgroup>
       <FlipMove className={'answersList'} data-testid='answers'>
-        {survey.answers.map((answer) => (
-          <li className={answer.isCurrentAccountAnswer ? 'active' : ''} data-testid='answer-wrap' key={answer.answer}>
-            {answer.image && <img data-testid='image' src={answer.image} alt={answer.answer} />}
-            <span data-testid='answer' className={'answer'}>
-              {answer.answer}
-            </span>
-            <span data-testid='percent' className={'percent'}>
-              {answer.percent}%
-            </span>
-          </li>
-        ))}
+        <>
+          {survey.answers.map((answer) => (
+            <SurveyAnswer key={answer.answer} answer={answer} />
+          ))}
+        </>
       </FlipMove>
       <button data-testid='back-button' className={'button'} onClick={() => navigate(-1)}>
         Voltar
