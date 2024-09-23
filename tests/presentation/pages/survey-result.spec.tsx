@@ -15,7 +15,7 @@ type SutTypes = {
 }
 
 const makeSut = (loadSurveyResult = jest.fn().mockResolvedValue(mockSurveyModel())): SutTypes => {
-  const history = createMemoryHistory({ initialEntries: ['/'] })
+  const history = createMemoryHistory({ initialEntries: ['/', '/surveys/any_id'], initialIndex: 1 })
   const setCurrentAccount = jest.fn()
   render(
     <AccountContext.Provider value={{ setCurrentAccount, getCurrentAccount: () => mockAccountModel() }}>
@@ -112,5 +112,14 @@ describe('SurveyResult Page', () => {
     fireEvent.click(screen.getByTestId('reload'))
     expect(loadSurveyResult).toHaveBeenCalledTimes(2)
     await waitFor(() => screen.getByTestId('survey-result'))
+  })
+
+  it('Should go back to SurveyList', async () => {
+    const { history } = makeSut()
+
+    await waitFor(() => screen.getByTestId('survey-result'))
+    fireEvent.click(screen.getByTestId('back-button'))
+
+    expect(history.location.pathname).toBe('/')
   })
 })
