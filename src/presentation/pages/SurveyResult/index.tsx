@@ -4,6 +4,7 @@ import FlipMove from 'react-flip-move'
 import { LoadSurveyResult } from '@/domain/usecases'
 import { SurveyModel } from '@/domain/models'
 import { Header, Footer, Loading, Calendar, Error } from '@/presentation/components'
+import { useErrorHandler } from '@/presentation/hooks'
 
 import './styles.scss'
 
@@ -12,6 +13,9 @@ type Props = {
 }
 
 export const SurveyResult: React.FC<Props> = ({ loadSurveyResult }) => {
+  const handleError = useErrorHandler((error) => {
+    setState((prevState) => ({ ...prevState, survey: null, error: error.message }))
+  })
   const [state, setState] = useState({
     loading: false,
     error: '',
@@ -19,7 +23,9 @@ export const SurveyResult: React.FC<Props> = ({ loadSurveyResult }) => {
   })
 
   useEffect(() => {
-    loadSurveyResult().then((survey) => setState((prevState) => ({ ...prevState, survey })))
+    loadSurveyResult()
+      .then((survey) => setState((prevState) => ({ ...prevState, survey })))
+      .catch(handleError)
   }, [])
 
   return (
