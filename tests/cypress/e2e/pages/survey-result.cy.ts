@@ -1,0 +1,17 @@
+const apiUrl = /api\/surveys/
+
+describe('SurveyList', () => {
+  beforeEach(() => {
+    cy.fixture('account').then((account) => {
+      localStorage.setItem('account', JSON.stringify(account))
+    })
+  })
+
+  it('Should present error on UnexpectedError', () => {
+    cy.mockResServerError({ url: apiUrl })
+
+    cy.visit('/surveys/any_id')
+
+    cy.getByTestId('error').should('contain.text', 'Algo de inesperado aconteceu')
+  })
+})
