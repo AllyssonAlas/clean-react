@@ -53,4 +53,12 @@ describe('SurveyList', () => {
       assert.notExists(li.find('[data-testid="image"]'))
     })
   })
+
+  it('Should go backSurveyList on back button click', () => {
+    cy.mockResOk({ url: apiUrl, fixture: 'survey' })
+    cy.visit('')
+    cy.visit('/surveys/any_id')
+    cy.getByTestId('back-button').click()
+    cy.testUrl('')
+  })
 })
