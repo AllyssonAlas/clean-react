@@ -9,7 +9,7 @@ import { useErrorHandler } from '@/presentation/hooks'
 import './styles.scss'
 
 type Props = {
-  loadSurveyResult?: LoadSurveyResult
+  loadSurveyResult: LoadSurveyResult
 }
 
 export const SurveyResult: React.FC<Props> = ({ loadSurveyResult }) => {
