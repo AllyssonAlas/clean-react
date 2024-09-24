@@ -2,7 +2,7 @@ import { mock, MockProxy } from 'jest-mock-extended'
 
 import { setupSaveSurveyResult, SaveSurveyResult } from '@/domain/usecases'
 import { HttpClient, HttpStatusCode } from '@/domain/contracts/gateways'
-import { AccessDeniedError } from '@/domain/errors'
+import { AccessDeniedError, UnexpectedError } from '@/domain/errors'
 
 describe('SaveSurveyResult', () => {
   let input: {
@@ -38,5 +38,15 @@ describe('SaveSurveyResult', () => {
     const promise = sut(input)
 
     await expect(promise).rejects.toThrow(new AccessDeniedError())
+  })
+
+  it('Should throw UnexpectedError if HttpPostClient returns 404', async () => {
+    httpClient.request.mockResolvedValueOnce({
+      statusCode: HttpStatusCode.notFound,
+    })
+
+    const promise = sut(input)
+
+    await expect(promise).rejects.toThrow(new UnexpectedError())
   })
 })
