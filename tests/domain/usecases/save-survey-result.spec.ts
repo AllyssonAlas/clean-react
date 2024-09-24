@@ -4,6 +4,8 @@ import { setupSaveSurveyResult, SaveSurveyResult } from '@/domain/usecases'
 import { HttpClient, HttpStatusCode } from '@/domain/contracts/gateways'
 import { AccessDeniedError, UnexpectedError } from '@/domain/errors'
 
+import { mockSurveyApiModel } from '@/tests/domain/mocks'
+
 describe('SaveSurveyResult', () => {
   let input: {
     answer: string
@@ -16,7 +18,7 @@ describe('SaveSurveyResult', () => {
     input = { answer: 'any_answer' }
     url = 'any_url'
     httpClient = mock()
-    httpClient.request.mockResolvedValue({ statusCode: 200 })
+    httpClient.request.mockResolvedValue({ statusCode: 200, body: mockSurveyApiModel() })
   })
 
   beforeEach(() => {
@@ -58,5 +60,14 @@ describe('SaveSurveyResult', () => {
     const promise = sut(input)
 
     await expect(promise).rejects.toThrow(new UnexpectedError())
+  })
+
+  it('Should return a SurveyModel list if HttpPostClient returns 200', async () => {
+    const apiOutput = mockSurveyApiModel()
+    httpClient.request.mockResolvedValueOnce({ statusCode: 200, body: apiOutput })
+
+    const result = await sut(input)
+
+    expect(result).toEqual({ ...apiOutput, date: new Date(apiOutput.date) })
   })
 })
