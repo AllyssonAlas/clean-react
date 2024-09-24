@@ -1,7 +1,8 @@
 import { mock, MockProxy } from 'jest-mock-extended'
 
 import { setupSaveSurveyResult, SaveSurveyResult } from '@/domain/usecases'
-import { HttpClient } from '@/domain/contracts/gateways'
+import { HttpClient, HttpStatusCode } from '@/domain/contracts/gateways'
+import { AccessDeniedError } from '@/domain/errors'
 
 describe('SaveSurveyResult', () => {
   let input: {
@@ -15,6 +16,7 @@ describe('SaveSurveyResult', () => {
     input = { answer: 'any_answer' }
     url = 'any_url'
     httpClient = mock()
+    httpClient.request.mockResolvedValue({ statusCode: 200 })
   })
 
   beforeEach(() => {
@@ -26,5 +28,15 @@ describe('SaveSurveyResult', () => {
 
     expect(httpClient.request).toHaveBeenCalledWith({ url, method: 'put', params: input })
     expect(httpClient.request).toHaveBeenCalledTimes(1)
+  })
+
+  it('Should throw AccessDenied if HttpPostClient returns 403', async () => {
+    httpClient.request.mockResolvedValueOnce({
+      statusCode: HttpStatusCode.forbidden,
+    })
+
+    const promise = sut(input)
+
+    await expect(promise).rejects.toThrow(new AccessDeniedError())
   })
 })
