@@ -1,5 +1,5 @@
 import { HttpClient, HttpStatusCode } from '@/domain/contracts/gateways'
-import { AccessDeniedError } from '@/domain/errors'
+import { AccessDeniedError, UnexpectedError } from '@/domain/errors'
 
 type Input = { answer: string }
 export type SaveSurveyResult = (input: Input) => Promise<void>
@@ -13,6 +13,8 @@ export const setupSaveSurveyResult: Setup = (url, httpClient) => {
         return null
       case HttpStatusCode.forbidden:
         throw new AccessDeniedError()
+      default:
+        throw new UnexpectedError()
     }
   }
 }
