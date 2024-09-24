@@ -13,27 +13,16 @@ type HttpResponse<BodyType> = {
   body?: BodyType
 }
 
-export interface HttpPostClient<ReqType = any, ResType = any> {
-  post: (input: HttpPostClient.Input<ReqType>) => Promise<HttpPostClient.Output<ResType>>
+export interface HttpClient<ReqType = any, ResType = any> {
+  request: (input: HttpClient.Input<ReqType>) => Promise<HttpClient.Output<ResType>>
 }
 
-export namespace HttpPostClient {
+export namespace HttpClient {
   export type Input<ParamsType = any> = {
     url: string
+    method: 'post' | 'get' | 'put' | 'delete'
+    headers?: any
     params?: ParamsType
-  }
-
-  export type Output<ResType = any> = HttpResponse<ResType>
-}
-
-export interface HttpGetClient<ResType = any> {
-  get: (input: HttpGetClient.Input) => Promise<HttpGetClient.Output<ResType>>
-}
-
-export namespace HttpGetClient {
-  export type Input = {
-    url: string
-    headers?: object
   }
 
   export type Output<ResType = any> = HttpResponse<ResType>

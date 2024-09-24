@@ -1,15 +1,15 @@
 import { SurveyModel } from '@/domain/models'
-import { HttpGetClient, HttpStatusCode } from '@/domain/contracts/gateways'
+import { HttpClient, HttpStatusCode } from '@/domain/contracts/gateways'
 import { SurveyListApiModel } from '@/domain/models/externals'
 import { AccessDeniedError, UnexpectedError } from '@/domain/errors'
 
 type Output = Array<SurveyModel>
 export type LoadSurveyList = () => Promise<Output>
-type Setup = (url: string, httpGetClient: HttpGetClient<SurveyListApiModel>) => LoadSurveyList
+type Setup = (url: string, httpClient: HttpClient<SurveyListApiModel>) => LoadSurveyList
 
-export const setupLoadSurveyList: Setup = (url, httpGetClient) => {
+export const setupLoadSurveyList: Setup = (url, httpClient) => {
   return async () => {
-    const { statusCode, body } = await httpGetClient.get({ url })
+    const { statusCode, body } = await httpClient.request({ url, method: 'get' })
     switch (statusCode) {
       case HttpStatusCode.ok:
       case HttpStatusCode.noContent:

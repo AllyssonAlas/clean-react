@@ -2,35 +2,35 @@ import { mock, MockProxy } from 'jest-mock-extended'
 
 import { SurveyApiModel } from '@/domain/models/externals'
 import { setupLoadSurveyResult, LoadSurveyResult } from '@/domain/usecases'
-import { HttpGetClient, HttpStatusCode } from '@/domain/contracts/gateways'
+import { HttpClient, HttpStatusCode } from '@/domain/contracts/gateways'
 import { AccessDeniedError, UnexpectedError } from '@/domain/errors'
 
 import { mockSurveyApiModel } from '@/tests/domain/mocks'
 
 describe('LoadSurveyResult', () => {
   let url: string
-  let httpGetClient: MockProxy<HttpGetClient<SurveyApiModel>>
+  let httpClient: MockProxy<HttpClient<SurveyApiModel>>
   let sut: LoadSurveyResult
 
   beforeAll(() => {
     url = 'any_url'
-    httpGetClient = mock()
-    httpGetClient.get.mockResolvedValue({ statusCode: 200, body: mockSurveyApiModel() })
+    httpClient = mock()
+    httpClient.request.mockResolvedValue({ statusCode: 200, body: mockSurveyApiModel() })
   })
 
   beforeEach(() => {
-    sut = setupLoadSurveyResult(url, httpGetClient)
+    sut = setupLoadSurveyResult(url, httpClient)
   })
 
-  it('Should call HttpGetClient with correct input', async () => {
+  it('Should call HttpClient with correct input', async () => {
     await sut()
 
-    expect(httpGetClient.get).toHaveBeenCalledWith({ url })
-    expect(httpGetClient.get).toHaveBeenCalledTimes(1)
+    expect(httpClient.request).toHaveBeenCalledWith({ url, method: 'get' })
+    expect(httpClient.request).toHaveBeenCalledTimes(1)
   })
 
   it('Should throw AccessDenied if HttpPostClient returns 403', async () => {
-    httpGetClient.get.mockResolvedValueOnce({
+    httpClient.request.mockResolvedValueOnce({
       statusCode: HttpStatusCode.forbidden,
     })
 
@@ -40,7 +40,7 @@ describe('LoadSurveyResult', () => {
   })
 
   it('Should throw UnexpectedError if HttpPostClient returns 404', async () => {
-    httpGetClient.get.mockResolvedValueOnce({
+    httpClient.request.mockResolvedValueOnce({
       statusCode: HttpStatusCode.notFound,
     })
 
@@ -50,7 +50,7 @@ describe('LoadSurveyResult', () => {
   })
 
   it('Should throw UnexpectedError if HttpPostClient returns 500', async () => {
-    httpGetClient.get.mockResolvedValueOnce({
+    httpClient.request.mockResolvedValueOnce({
       statusCode: HttpStatusCode.serverError,
     })
 
@@ -61,7 +61,7 @@ describe('LoadSurveyResult', () => {
 
   it('Should return a SurveyModel list if HttpPostClient returns 200', async () => {
     const apiOutput = mockSurveyApiModel()
-    httpGetClient.get.mockResolvedValueOnce({ statusCode: 200, body: apiOutput })
+    httpClient.request.mockResolvedValueOnce({ statusCode: 200, body: apiOutput })
 
     const result = await sut()
 

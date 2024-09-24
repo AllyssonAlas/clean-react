@@ -1,37 +1,37 @@
 import { mock, MockProxy } from 'jest-mock-extended'
 
 import { AddAccount, setupAddAccount } from '@/domain/usecases'
-import { HttpPostClient, HttpStatusCode } from '@/domain/contracts/gateways'
+import { HttpClient, HttpStatusCode } from '@/domain/contracts/gateways'
 import { EmailInUseError, UnexpectedError } from '@/domain/errors'
 
 import { mockAddAccountInput, mockAccountModel } from '@/tests/domain/mocks'
 
 describe('AddAccount', () => {
   let url: string
-  let httpPostClient: MockProxy<HttpPostClient>
+  let httpClient: MockProxy<HttpClient>
   let sut: AddAccount
 
   beforeAll(() => {
     url = 'any_url'
-    httpPostClient = mock()
-    httpPostClient.post.mockResolvedValue({
+    httpClient = mock()
+    httpClient.request.mockResolvedValue({
       statusCode: HttpStatusCode.ok,
       body: mockAccountModel(),
     })
   })
 
   beforeEach(() => {
-    sut = setupAddAccount(url, httpPostClient)
+    sut = setupAddAccount(url, httpClient)
   })
 
-  it('Should call HttpPostClient with correct URL and params', async () => {
+  it('Should call HttpClient with correct input', async () => {
     await sut(mockAddAccountInput())
 
-    expect(httpPostClient.post).toHaveBeenCalledWith({ url, params: mockAddAccountInput() })
+    expect(httpClient.request).toHaveBeenCalledWith({ url, method: 'post', params: mockAddAccountInput() })
   })
 
-  it('Should throw EmailInUseError if HttpPostClient returns 401', async () => {
-    httpPostClient.post.mockResolvedValueOnce({
+  it('Should throw EmailInUseError if HttpClient returns 401', async () => {
+    httpClient.request.mockResolvedValueOnce({
       statusCode: HttpStatusCode.forbidden,
     })
 
@@ -40,8 +40,8 @@ describe('AddAccount', () => {
     expect(promise).rejects.toThrow(new EmailInUseError())
   })
 
-  it('Should throw UnexpectedError if HttpPostClient returns 400', async () => {
-    httpPostClient.post.mockResolvedValueOnce({
+  it('Should throw UnexpectedError if HttpClient returns 400', async () => {
+    httpClient.request.mockResolvedValueOnce({
       statusCode: HttpStatusCode.badRequest,
     })
 
@@ -50,8 +50,8 @@ describe('AddAccount', () => {
     await expect(promise).rejects.toThrow(new UnexpectedError())
   })
 
-  it('Should throw UnexpectedError if HttpPostClient returns 404', async () => {
-    httpPostClient.post.mockResolvedValueOnce({
+  it('Should throw UnexpectedError if HttpClient returns 404', async () => {
+    httpClient.request.mockResolvedValueOnce({
       statusCode: HttpStatusCode.notFound,
     })
 
@@ -60,8 +60,8 @@ describe('AddAccount', () => {
     await expect(promise).rejects.toThrow(new UnexpectedError())
   })
 
-  it('Should throw UnexpectedError if HttpPostClient returns 500', async () => {
-    httpPostClient.post.mockResolvedValueOnce({
+  it('Should throw UnexpectedError if HttpClient returns 500', async () => {
+    httpClient.request.mockResolvedValueOnce({
       statusCode: HttpStatusCode.serverError,
     })
 
@@ -70,7 +70,7 @@ describe('AddAccount', () => {
     await expect(promise).rejects.toThrow(new UnexpectedError())
   })
 
-  it('Should return an AccountModel if HttpPostClient return 200', async () => {
+  it('Should return an AccountModel if HttpClient return 200', async () => {
     const account = await sut(mockAddAccountInput())
 
     expect(account).toEqual(mockAccountModel())

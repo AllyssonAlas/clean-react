@@ -5,105 +5,59 @@ import { AxiosHttpClient } from '@/infra/gateways'
 jest.mock('axios')
 
 describe('AxiosHttpClient', () => {
+  let input: {
+    url: string
+    method: any
+    params: object
+    headers: object
+  }
   let fakeAxios: jest.Mocked<typeof axios>
   let sut: AxiosHttpClient
 
   beforeAll(() => {
     fakeAxios = axios as jest.Mocked<typeof axios>
+    fakeAxios.request.mockResolvedValue({ data: 'any_data', status: 200 })
+    input = { url: 'any_url', method: 'post', params: { any: 'any' }, headers: { any: 'any' } }
   })
 
   beforeEach(() => {
     sut = new AxiosHttpClient()
   })
 
-  describe('post', () => {
-    let input: {
-      url: string
-      params: object
-    }
+  it('Should call request with correct input', async () => {
+    await sut.request(input)
 
-    beforeAll(() => {
-      input = { url: 'any_url', params: { any: 'any' } }
+    expect(fakeAxios.request).toHaveBeenCalledWith({
+      url: 'any_url',
+      method: 'post',
+      data: { any: 'any' },
+      headers: { any: 'any' },
     })
+    expect(fakeAxios.request).toHaveBeenCalledTimes(1)
+  })
 
-    beforeAll(() => {
-      fakeAxios.post.mockResolvedValue({ data: 'any_data', status: 200 })
-    })
+  it('Should return correct output on success', async () => {
+    const output = await sut.request(input)
 
-    it('Should call post with correct input', async () => {
-      await sut.post(input)
-
-      expect(fakeAxios.post).toHaveBeenCalledWith('any_url', { any: 'any' })
-      expect(fakeAxios.post).toHaveBeenCalledTimes(1)
-    })
-
-    it('Should return correct output on success', async () => {
-      const output = await sut.post(input)
-
-      expect(output).toEqual({
-        body: 'any_data',
-        statusCode: 200,
-      })
-    })
-
-    it('Should return correct output on http error', async () => {
-      fakeAxios.post.mockRejectedValueOnce({ response: { data: 'any_data', status: 400 } })
-
-      const output = await sut.post(input)
-
-      expect(output).toEqual({ body: 'any_data', statusCode: 400 })
-    })
-
-    it('Should rethrow error if axios throw', async () => {
-      fakeAxios.post.mockRejectedValueOnce(new Error('axios_client_error'))
-
-      const promise = sut.post(input)
-
-      await expect(promise).rejects.toThrow(new Error('axios_client_error'))
+    expect(output).toEqual({
+      body: 'any_data',
+      statusCode: 200,
     })
   })
 
-  describe('get', () => {
-    let input: {
-      url: string
-      headers: object
-    }
+  it('Should return correct output on http error', async () => {
+    fakeAxios.request.mockRejectedValueOnce({ response: { data: 'any_data', status: 400 } })
 
-    beforeAll(() => {
-      input = { url: 'any_url', headers: { any: 'any' } }
-    })
+    const output = await sut.request(input)
 
-    beforeAll(() => {
-      fakeAxios.get.mockResolvedValue({ data: 'any_data', status: 200 })
-    })
+    expect(output).toEqual({ body: 'any_data', statusCode: 400 })
+  })
 
-    it('Should call get with correct input', async () => {
-      await sut.get(input)
+  it('Should rethrow error if axios throw', async () => {
+    fakeAxios.request.mockRejectedValueOnce(new Error('axios_client_error'))
 
-      expect(fakeAxios.get).toHaveBeenCalledWith('any_url', { headers: { any: 'any' } })
-      expect(fakeAxios.get).toHaveBeenCalledTimes(1)
-    })
+    const promise = sut.request(input)
 
-    it('Should return correct output on success', async () => {
-      const output = await sut.get(input)
-
-      expect(output).toEqual({ body: 'any_data', statusCode: 200 })
-    })
-
-    it('Should return correct output on http error', async () => {
-      fakeAxios.get.mockRejectedValueOnce({ response: { data: 'any_data', status: 400 } })
-
-      const output = await sut.get(input)
-
-      expect(output).toEqual({ body: 'any_data', statusCode: 400 })
-    })
-
-    it('Should rethrow error if axios throw', async () => {
-      fakeAxios.get.mockRejectedValueOnce(new Error('axios_client_error'))
-
-      const promise = sut.get(input)
-
-      await expect(promise).rejects.toThrow(new Error('axios_client_error'))
-    })
+    await expect(promise).rejects.toThrow(new Error('axios_client_error'))
   })
 })
