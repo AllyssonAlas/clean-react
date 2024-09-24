@@ -49,4 +49,14 @@ describe('SaveSurveyResult', () => {
 
     await expect(promise).rejects.toThrow(new UnexpectedError())
   })
+
+  it('Should throw UnexpectedError if HttpPostClient returns 500', async () => {
+    httpClient.request.mockResolvedValueOnce({
+      statusCode: HttpStatusCode.serverError,
+    })
+
+    const promise = sut(input)
+
+    await expect(promise).rejects.toThrow(new UnexpectedError())
+  })
 })
