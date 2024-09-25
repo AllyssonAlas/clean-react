@@ -8,6 +8,11 @@ import { SurveyResult } from '@/presentation/pages'
 
 import { mockAccountModel, mockSurveyModel } from '@/tests/domain/mocks'
 
+type SutParams = {
+  saveSurveyResult?: jest.Mock
+  loadSurveyResult?: jest.Mock
+}
+
 type SutTypes = {
   saveSurveyResult: jest.Mock
   loadSurveyResult: jest.Mock
@@ -15,10 +20,12 @@ type SutTypes = {
   history: MemoryHistory
 }
 
-const makeSut = (loadSurveyResult = jest.fn().mockResolvedValue(mockSurveyModel())): SutTypes => {
+const makeSut = ({
+  saveSurveyResult = jest.fn().mockResolvedValue(mockSurveyModel()),
+  loadSurveyResult = jest.fn().mockResolvedValue(mockSurveyModel()),
+}: SutParams = {}): SutTypes => {
   const history = createMemoryHistory({ initialEntries: ['/', '/surveys/any_id'], initialIndex: 1 })
   const setCurrentAccount = jest.fn()
-  const saveSurveyResult = jest.fn()
   render(
     <AccountContext.Provider value={{ setCurrentAccount, getCurrentAccount: () => mockAccountModel() }}>
       <Router location={history.location} navigator={history}>
@@ -57,7 +64,7 @@ describe('SurveyResult Page', () => {
     })
     const loadSurveyResult = jest.fn().mockResolvedValue(survey)
 
-    makeSut(loadSurveyResult)
+    makeSut({ loadSurveyResult })
     await waitFor(() => screen.getByTestId('survey-result'))
 
     expect(screen.getByTestId('day')).toHaveTextContent('10')
@@ -83,7 +90,7 @@ describe('SurveyResult Page', () => {
   it('Should render error on UnexpectedError', async () => {
     const error = new UnexpectedError()
     const loadSurveyResult = jest.fn().mockRejectedValue(error)
-    makeSut(loadSurveyResult)
+    makeSut({ loadSurveyResult })
 
     await waitFor(() => screen.getByTestId('survey-result'))
 
@@ -94,7 +101,7 @@ describe('SurveyResult Page', () => {
 
   it('Should logout on AccessDeniedError', async () => {
     const loadSurveyResult = jest.fn().mockRejectedValue(new AccessDeniedError())
-    const { setCurrentAccount, history } = makeSut(loadSurveyResult)
+    const { setCurrentAccount, history } = makeSut({ loadSurveyResult })
 
     await waitFor(() => screen.getByTestId('survey-result'))
 
@@ -106,7 +113,7 @@ describe('SurveyResult Page', () => {
   it('Should call LoadSurveyResult on reload', async () => {
     const error = new UnexpectedError()
     const loadSurveyResult = jest.fn().mockRejectedValue(error)
-    makeSut(loadSurveyResult)
+    makeSut({ loadSurveyResult })
 
     await screen.findByTestId('error')
     await waitFor(() => screen.getByTestId('survey-result'))
@@ -161,5 +168,20 @@ describe('SurveyResult Page', () => {
     })
     expect(saveSurveyResult).toHaveBeenCalledTimes(1)
     await waitFor(() => screen.getByTestId('survey-result'))
+  })
+
+  it('Should render error on UnexpectedError', async () => {
+    const error = new UnexpectedError()
+    const saveSurveyResult = jest.fn().mockRejectedValue(error)
+    makeSut({ saveSurveyResult })
+
+    await waitFor(() => screen.getByTestId('survey-result'))
+    const answersWrap = screen.queryAllByTestId('answer-wrap')
+    fireEvent.click(answersWrap[1])
+    const errorElement = await screen.findByTestId('error')
+
+    expect(screen.queryByTestId('question')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
+    expect(errorElement).toHaveTextContent(error.message)
   })
 })
