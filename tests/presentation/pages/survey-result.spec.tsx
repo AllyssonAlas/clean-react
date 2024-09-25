@@ -122,4 +122,26 @@ describe('SurveyResult Page', () => {
 
     expect(history.location.pathname).toBe('/')
   })
+
+  it('Should not present load on active answer click', async () => {
+    makeSut()
+
+    await waitFor(() => screen.getByTestId('survey-result'))
+    const answersWrap = screen.queryAllByTestId('answer-wrap')
+    fireEvent.click(answersWrap[0])
+
+    expect(answersWrap[0]).toHaveClass('active')
+
+    expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
+  })
+
+  it('Should not present load on active answer click', async () => {
+    makeSut()
+
+    await waitFor(() => screen.getByTestId('survey-result'))
+    const answersWrap = screen.queryAllByTestId('answer-wrap')
+    fireEvent.click(answersWrap[0])
+
+    expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
+  })
 })
