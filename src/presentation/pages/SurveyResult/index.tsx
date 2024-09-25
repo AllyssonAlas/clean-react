@@ -16,12 +16,12 @@ type Props = {
 
 export const SurveyResult: React.FC<Props> = ({ loadSurveyResult, saveSurveyResult }) => {
   const handleError = useErrorHandler((error) => {
-    setState((prevState) => ({ ...prevState, survey: null, error: error.message }))
+    setState((prevState) => ({ ...prevState, survey: null, loading: false, error: error.message }))
   })
   const reload = (): void => setState((old) => ({ survey: null, error: '', reload: !old.reload, loading: false }))
   const onAnswer = async (answer: string): Promise<void> => {
     setState((prevState) => ({ ...prevState, loading: true }))
-    saveSurveyResult({ answer })
+    saveSurveyResult({ answer }).catch(handleError)
   }
   const [state, setState] = useState({
     loading: false,
