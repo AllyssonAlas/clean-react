@@ -9,6 +9,7 @@ import { SurveyResult } from '@/presentation/pages'
 import { mockAccountModel, mockSurveyModel } from '@/tests/domain/mocks'
 
 type SutTypes = {
+  saveSurveyResult: jest.Mock
   loadSurveyResult: jest.Mock
   setCurrentAccount: jest.Mock
   history: MemoryHistory
@@ -17,14 +18,15 @@ type SutTypes = {
 const makeSut = (loadSurveyResult = jest.fn().mockResolvedValue(mockSurveyModel())): SutTypes => {
   const history = createMemoryHistory({ initialEntries: ['/', '/surveys/any_id'], initialIndex: 1 })
   const setCurrentAccount = jest.fn()
+  const saveSurveyResult = jest.fn()
   render(
     <AccountContext.Provider value={{ setCurrentAccount, getCurrentAccount: () => mockAccountModel() }}>
       <Router location={history.location} navigator={history}>
-        <SurveyResult loadSurveyResult={loadSurveyResult} />
+        <SurveyResult loadSurveyResult={loadSurveyResult} saveSurveyResult={saveSurveyResult} />
       </Router>
     </AccountContext.Provider>,
   )
-  return { loadSurveyResult, history, setCurrentAccount }
+  return { loadSurveyResult, saveSurveyResult, history, setCurrentAccount }
 }
 
 describe('SurveyResult Page', () => {
@@ -143,5 +145,21 @@ describe('SurveyResult Page', () => {
     fireEvent.click(answersWrap[0])
 
     expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
+  })
+
+  it('Should call SaveSurveyResult on non active answer click', async () => {
+    const { saveSurveyResult, loadSurveyResult } = makeSut()
+
+    await waitFor(() => screen.getByTestId('survey-result'))
+    const answersWrap = screen.queryAllByTestId('answer-wrap')
+    const loadSurveyResultData = await loadSurveyResult()
+    fireEvent.click(answersWrap[1])
+
+    expect(screen.queryByTestId('loading')).toBeInTheDocument()
+    expect(saveSurveyResult).toHaveBeenCalledWith({
+      answer: loadSurveyResultData.answers[1].answer,
+    })
+    expect(saveSurveyResult).toHaveBeenCalledTimes(1)
+    await waitFor(() => screen.getByTestId('survey-result'))
   })
 })
