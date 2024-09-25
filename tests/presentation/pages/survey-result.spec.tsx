@@ -184,4 +184,18 @@ describe('SurveyResult Page', () => {
     expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
     expect(errorElement).toHaveTextContent(error.message)
   })
+
+  it('Should logout on AccessDeniedError', async () => {
+    const saveSurveyResult = jest.fn().mockRejectedValue(new AccessDeniedError())
+    const { history, setCurrentAccount } = makeSut({ saveSurveyResult })
+
+    await waitFor(() => screen.getByTestId('survey-result'))
+    const answersWrap = screen.queryAllByTestId('answer-wrap')
+    fireEvent.click(answersWrap[1])
+    await waitFor(() => screen.getByTestId('survey-result'))
+
+    expect(setCurrentAccount).toHaveBeenCalledWith(null)
+    expect(setCurrentAccount).toHaveBeenCalledTimes(1)
+    expect(history.location.pathname).toBe('/login')
+  })
 })
