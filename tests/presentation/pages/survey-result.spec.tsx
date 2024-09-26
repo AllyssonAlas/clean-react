@@ -198,4 +198,36 @@ describe('SurveyResult Page', () => {
     expect(setCurrentAccount).toHaveBeenCalledTimes(1)
     expect(history.location.pathname).toBe('/login')
   })
+
+  it('Should present survey on SaveSurveyResult success', async () => {
+    const survey = Object.assign({}, mockSurveyModel(), {
+      date: new Date('2022-10-23T00:00:00'),
+    })
+    const saveSurveyResult = jest.fn().mockResolvedValue(survey)
+    makeSut({ saveSurveyResult })
+
+    await waitFor(() => screen.getByTestId('survey-result'))
+    const answersWrap = screen.queryAllByTestId('answer-wrap')
+    fireEvent.click(answersWrap[1])
+    await waitFor(() => screen.getByTestId('survey-result'))
+
+    expect(screen.getByTestId('day')).toHaveTextContent('23')
+    expect(screen.getByTestId('month')).toHaveTextContent('out')
+    expect(screen.getByTestId('year')).toHaveTextContent('2022')
+    expect(screen.getByTestId('question')).toHaveTextContent(survey.question)
+    expect(screen.getByTestId('answers').childElementCount).toBe(2)
+    expect(answersWrap[0]).toHaveClass('active')
+    expect(answersWrap[1]).not.toHaveClass('active')
+    const images = screen.queryAllByTestId('image')
+    expect(images[0]).toHaveAttribute('src', survey.answers[0].image)
+    expect(images[0]).toHaveAttribute('alt', survey.answers[0].answer)
+    expect(images[1]).toBeFalsy()
+    const answers = screen.queryAllByTestId('answer')
+    expect(answers[0]).toHaveTextContent(survey.answers[0].answer)
+    expect(answers[1]).toHaveTextContent(survey.answers[1].answer)
+    const percents = screen.queryAllByTestId('percent')
+    expect(percents[0]).toHaveTextContent(`${survey.answers[0].percent}%`)
+    expect(percents[1]).toHaveTextContent(`${survey.answers[1].percent}%`)
+    expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
+  })
 })
