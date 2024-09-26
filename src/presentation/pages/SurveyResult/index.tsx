@@ -21,7 +21,9 @@ export const SurveyResult: React.FC<Props> = ({ loadSurveyResult, saveSurveyResu
   const reload = (): void => setState((old) => ({ survey: null, error: '', reload: !old.reload, loading: false }))
   const onAnswer = async (answer: string): Promise<void> => {
     setState((prevState) => ({ ...prevState, loading: true }))
-    saveSurveyResult({ answer }).catch(handleError)
+    saveSurveyResult({ answer })
+      .then((survey) => setState((prevState) => ({ ...prevState, loading: false, survey })))
+      .catch(handleError)
   }
   const [state, setState] = useState({
     loading: false,
