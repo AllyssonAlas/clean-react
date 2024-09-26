@@ -230,4 +230,16 @@ describe('SurveyResult Page', () => {
     expect(percents[1]).toHaveTextContent(`${survey.answers[1].percent}%`)
     expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
   })
+
+  it('Should prevents multiple answer click', async () => {
+    const { saveSurveyResult } = makeSut()
+
+    await waitFor(() => screen.getByTestId('survey-result'))
+    const answersWrap = screen.queryAllByTestId('answer-wrap')
+    fireEvent.click(answersWrap[1])
+    fireEvent.click(answersWrap[1])
+    await waitFor(() => screen.getByTestId('survey-result'))
+
+    expect(saveSurveyResult).toHaveBeenCalledTimes(1)
+  })
 })
