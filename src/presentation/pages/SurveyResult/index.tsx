@@ -20,6 +20,7 @@ export const SurveyResult: React.FC<Props> = ({ loadSurveyResult, saveSurveyResu
   })
   const reload = (): void => setState((old) => ({ survey: null, error: '', reload: !old.reload, loading: false }))
   const onAnswer = async (answer: string): Promise<void> => {
+    if (state.loading) return
     setState((prevState) => ({ ...prevState, loading: true }))
     saveSurveyResult({ answer })
       .then((survey) => setState((prevState) => ({ ...prevState, loading: false, survey })))
