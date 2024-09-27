@@ -76,5 +76,11 @@ describe('SurveyList', () => {
       cy.get('li:nth-child(2)').click()
       cy.getByTestId('error').should('contain.text', 'Algo de inesperado aconteceu')
     })
+
+    it('Should logout on AccessDeniedError', () => {
+      cy.mockResForbidden({ url: apiUrl })
+      cy.visit('/surveys/any_id')
+      cy.testUrl('login')
+    })
   })
 })
