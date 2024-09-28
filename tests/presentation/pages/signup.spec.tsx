@@ -1,23 +1,20 @@
-import { Router } from 'react-router-dom'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, screen } from '@testing-library/react'
 import { mock, MockProxy } from 'jest-mock-extended'
-import { createMemoryHistory } from 'history'
+import { createMemoryHistory, MemoryHistory } from 'history'
 
 import { EmailInUseError } from '@/domain/errors'
-import { AccountContext } from '@/presentation/contexts'
 import { SignUp } from '@/presentation/pages'
 import { Validation } from '@/presentation/protocols'
 
 import { mockAccountModel } from '@/tests/domain/mocks'
-import { populateInput, testStatusForField } from '@/tests/presentation/utils'
+import { populateInput, testStatusForField, renderComponent } from '@/tests/presentation/utils'
 
 type SutTypes = {
   setCurrentAccount: jest.Mock
   validation: MockProxy<Validation>
   addAccount: jest.Mock
+  history: MemoryHistory
 }
-
-const history = createMemoryHistory({ initialEntries: ['/signup'] })
 
 const simulateValidSubmit = async (): Promise<void> => {
   populateInput('name')
@@ -28,18 +25,15 @@ const simulateValidSubmit = async (): Promise<void> => {
 }
 
 const makeSut = (error: string = undefined): SutTypes => {
-  const setCurrentAccount = jest.fn().mockResolvedValue(undefined)
   const validation = mock<Validation>()
   validation.validate.mockReturnValue(error)
   const addAccount = jest.fn().mockResolvedValue(mockAccountModel())
-  render(
-    <AccountContext.Provider value={{ setCurrentAccount }}>
-      <Router location={history.location} navigator={history}>
-        <SignUp addAccount={addAccount} validation={validation} />
-      </Router>
-    </AccountContext.Provider>,
-  )
-  return { setCurrentAccount, validation, addAccount }
+  const history = createMemoryHistory({ initialEntries: ['/signup'] })
+  const { setCurrentAccount } = renderComponent({
+    history,
+    Component: () => <SignUp addAccount={addAccount} validation={validation} />,
+  })
+  return { history, setCurrentAccount, validation, addAccount }
 }
 
 describe('Signup Page', () => {
@@ -183,7 +177,7 @@ describe('Signup Page', () => {
   })
 
   it('Should call UpdateCurrentAccount on success', async () => {
-    const { setCurrentAccount } = makeSut()
+    const { setCurrentAccount, history } = makeSut()
 
     await simulateValidSubmit()
 
@@ -194,7 +188,7 @@ describe('Signup Page', () => {
   })
 
   it('Should got to Login page', async () => {
-    makeSut()
+    const { history } = makeSut()
 
     fireEvent.click(screen.getByTestId('login'))
 

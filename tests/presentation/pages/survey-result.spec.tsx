@@ -1,12 +1,11 @@
-import { Router } from 'react-router-dom'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, screen, waitFor } from '@testing-library/react'
 import { createMemoryHistory, MemoryHistory } from 'history'
 
 import { AccessDeniedError, UnexpectedError } from '@/domain/errors'
-import { AccountContext } from '@/presentation/contexts'
 import { SurveyResult } from '@/presentation/pages'
 
-import { mockAccountModel, mockSurveyModel } from '@/tests/domain/mocks'
+import { mockSurveyModel } from '@/tests/domain/mocks'
+import { renderComponent } from '@/tests/presentation/utils'
 
 type SutParams = {
   saveSurveyResult?: jest.Mock
@@ -25,14 +24,11 @@ const makeSut = ({
   loadSurveyResult = jest.fn().mockResolvedValue(mockSurveyModel()),
 }: SutParams = {}): SutTypes => {
   const history = createMemoryHistory({ initialEntries: ['/', '/surveys/any_id'], initialIndex: 1 })
-  const setCurrentAccount = jest.fn()
-  render(
-    <AccountContext.Provider value={{ setCurrentAccount, getCurrentAccount: () => mockAccountModel() }}>
-      <Router location={history.location} navigator={history}>
-        <SurveyResult loadSurveyResult={loadSurveyResult} saveSurveyResult={saveSurveyResult} />
-      </Router>
-    </AccountContext.Provider>,
-  )
+  const { setCurrentAccount } = renderComponent({
+    history,
+    Component: () => <SurveyResult loadSurveyResult={loadSurveyResult} saveSurveyResult={saveSurveyResult} />,
+  })
+
   return { loadSurveyResult, saveSurveyResult, history, setCurrentAccount }
 }
 

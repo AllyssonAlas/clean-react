@@ -1,23 +1,20 @@
-import { Router } from 'react-router-dom'
-import { render, fireEvent, screen } from '@testing-library/react'
+import { fireEvent, screen } from '@testing-library/react'
 import { mock, MockProxy } from 'jest-mock-extended'
-import { createMemoryHistory } from 'history'
+import { createMemoryHistory, MemoryHistory } from 'history'
 
 import { InvalidCredentialsError } from '@/domain/errors'
-import { AccountContext } from '@/presentation/contexts'
 import { Login } from '@/presentation/pages'
 import { Validation } from '@/presentation/protocols'
 
 import { mockAccountModel } from '@/tests/domain/mocks'
-import { populateInput, testStatusForField } from '@/tests/presentation/utils'
+import { populateInput, testStatusForField, renderComponent } from '@/tests/presentation/utils'
 
 type SutTypes = {
   setCurrentAccount: jest.Mock
   validation: MockProxy<Validation>
   authentication: jest.Mock
+  history: MemoryHistory
 }
-
-const history = createMemoryHistory({ initialEntries: ['/login'] })
 
 const simulateValidSubmit = async (): Promise<void> => {
   populateInput('email')
@@ -26,18 +23,16 @@ const simulateValidSubmit = async (): Promise<void> => {
 }
 
 const makeSut = (error: string = undefined): SutTypes => {
-  const setCurrentAccount = jest.fn().mockResolvedValue(undefined)
   const validation = mock<Validation>()
   validation.validate.mockReturnValue(error)
   const authentication = jest.fn().mockResolvedValue(mockAccountModel())
-  render(
-    <AccountContext.Provider value={{ setCurrentAccount }}>
-      <Router location={history.location} navigator={history}>
-        <Login authentication={authentication} validation={validation} />
-      </Router>
-    </AccountContext.Provider>,
-  )
-  return { setCurrentAccount, validation, authentication }
+  const history = createMemoryHistory({ initialEntries: ['/login'] })
+  const { setCurrentAccount } = renderComponent({
+    history,
+    Component: () => <Login authentication={authentication} validation={validation} />,
+  })
+
+  return { history, setCurrentAccount, validation, authentication }
 }
 
 describe('LoginPage', () => {
@@ -152,7 +147,7 @@ describe('LoginPage', () => {
   })
 
   it('Should go to Signup page', async () => {
-    makeSut()
+    const { history } = makeSut()
 
     fireEvent.click(screen.getByTestId('signup'))
 

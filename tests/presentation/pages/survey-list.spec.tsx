@@ -1,12 +1,11 @@
-import { Router } from 'react-router-dom'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, screen, waitFor } from '@testing-library/react'
 import { createMemoryHistory, MemoryHistory } from 'history'
 
 import { AccessDeniedError, UnexpectedError } from '@/domain/errors'
-import { AccountContext } from '@/presentation/contexts'
 import { SurveyList } from '@/presentation/pages'
 
-import { mockAccountModel, mockLoadSurveyListOutput } from '@/tests/domain/mocks'
+import { mockLoadSurveyListOutput } from '@/tests/domain/mocks'
+import { renderComponent } from '@/tests/presentation/utils'
 
 type SutTypes = {
   loadSurveyList: jest.Mock
@@ -16,14 +15,11 @@ type SutTypes = {
 
 const makeSut = (loadSurveyList = jest.fn().mockResolvedValue(mockLoadSurveyListOutput())): SutTypes => {
   const history = createMemoryHistory({ initialEntries: ['/'] })
-  const setCurrentAccount = jest.fn()
-  render(
-    <AccountContext.Provider value={{ setCurrentAccount, getCurrentAccount: () => mockAccountModel() }}>
-      <Router location={history.location} navigator={history}>
-        <SurveyList loadSurveyList={loadSurveyList} />
-      </Router>
-    </AccountContext.Provider>,
-  )
+  const { setCurrentAccount } = renderComponent({
+    history,
+    Component: () => <SurveyList loadSurveyList={loadSurveyList} />,
+  })
+
   return { loadSurveyList, setCurrentAccount, history }
 }
 
