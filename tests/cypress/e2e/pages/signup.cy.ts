@@ -1,4 +1,4 @@
-const apiUrl = /signup/
+const apiUrl = /api\/signup/
 
 const validFormData = [
   { field: 'name', value: 'any_name' },

@@ -1,4 +1,4 @@
-const apiUrl = /surveys/
+const apiUrl = /api\/surveys/
 
 describe('SurveyList', () => {
   beforeEach(() => {

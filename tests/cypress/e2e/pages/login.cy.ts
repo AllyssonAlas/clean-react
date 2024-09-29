@@ -1,4 +1,4 @@
-const apiUrl = /login/
+const apiUrl = /api\/login/
 
 const validFormData = [
   { field: 'email', value: 'valid_email@mail.com' },
